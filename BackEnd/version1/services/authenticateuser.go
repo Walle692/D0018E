@@ -5,7 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"version1/utils"
+
+	"github.com/Walle692/D0018E/tree/main/BackEnd/version1/utils"
 
 	"github.com/jackc/pgx/v5"
 )

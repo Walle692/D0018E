@@ -1,7 +1,7 @@
 package main
 
 import (
-	"version1/handlers"
+	"github.com/Walle692/D0018E/tree/main/BackEnd/version1/handlers"
 
 	"github.com/gin-gonic/gin" // requires "go install github.com/gin-gonic/gin@latest" to be ran
 	// for postgres

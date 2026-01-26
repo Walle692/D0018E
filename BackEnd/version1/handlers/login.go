@@ -2,7 +2,8 @@ package handlers
 
 import (
 	"net/http"
-	"version1/services"
+
+	"github.com/Walle692/D0018E/tree/main/BackEnd/version1/services"
 
 	"github.com/gin-gonic/gin"
 )
