@@ -1,0 +1,19 @@
+:root{
+  --bg: #ffe8f7;
+  --surface: #FFFFFF;
+  --border: #E5E7EB;
+  --text: #111827;
+  --muted: #6B7280;
+
+  --primary: #2563EB;      /* blue */
+  --primary-hover: #1D4ED8;
+  --nav: #2f4068;          /* very dark */
+  --nav-text: #F9FAFB;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
