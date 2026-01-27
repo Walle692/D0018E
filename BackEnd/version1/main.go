@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/Walle692/D0018E/tree/main/BackEnd/version1/handlers"
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin" // requires "go install github.com/gin-gonic/gin@latest" to be ran
-	// for postgres
 )
 
 func setupRouter() *gin.Engine {
@@ -18,6 +18,8 @@ func setupRouter() *gin.Engine {
 }
 
 func main() {
+	godotenv.Load()
+
 	// this creates a router
 	router := setupRouter()
 

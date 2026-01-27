@@ -1,8 +1,12 @@
 CREATE SCHEMA IF NOT EXISTS myschema;
 
+DROP TABLE IF EXISTS myschema.users;
+
 CREATE TABLE IF NOT EXISTS myschema.users (
     id SERIAL PRIMARY KEY,
     uname VARCHAR(10) UNIQUE NOT NULL,
     pword VARCHAR(6) NOT NULL,
+    token VARCHAR(256),
+    token_expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

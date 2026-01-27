@@ -28,7 +28,7 @@ func AuthenticateUser(username, password string) (string, error) {
 	var storedPassword string
 
 	// query the database (mby use query instead of queryrow?) and select the password from the username and store in storedpassword
-	err = conn.QueryRow(context.Background(), "SELECT pword FROM users WHERE uname= $1", username).Scan(&storedPassword)
+	err = conn.QueryRow(context.Background(), "SELECT pword FROM myschema.test WHERE uname=$1", username).Scan(&storedPassword)
 
 	if err == pgx.ErrNoRows {
 		// no user found
@@ -39,13 +39,20 @@ func AuthenticateUser(username, password string) (string, error) {
 
 	if password != storedPassword {
 		// passwords didn't match
+		fmt.Print("problema")
 		return "", errors.New("invalid password")
 	}
 
 	// Generate JWT token
-	token, err := utils.GenerateJWT(username)
+	token, expires_at, err := utils.GenerateJWT(username)
 	if err != nil {
 		return "", errors.New("failed to generate token")
+	}
+
+	// add the generated token to the db passing along the db connection
+	err = TokenToDB(token, expires_at, username, conn)
+	if err != nil {
+		return "", errors.New("failed to bind token")
 	}
 
 	return token, nil
