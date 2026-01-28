@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Walle692/D0018E/D0018E/Backend/version1/handlers"
-	"github.com/Walle692/D0018E/D0018E/Backend/version1/utils"
+	"github.com/Walle692/D0018E/BackEnd/version1/handlers"
+	"github.com/Walle692/D0018E/BackEnd/version1/utils"
 	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin" // requires "go install github.com/gin-gonic/gin@latest" to be ran
