@@ -7,32 +7,32 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type postgres struct {
+type Postgres struct {
 	db *pgxpool.Pool
 }
 
 var (
-	pgInstance *postgres
+	pgInstance *Postgres
 	pgOnce     sync.Once
 )
 
-func NewPG(ctx context.Context, connString string) (*postgres, error) {
+func NewPG(ctx context.Context, connString string) (*Postgres, error) {
 	pgOnce.Do(func() {
 		db, err := pgxpool.New(ctx, connString)
 		if err != nil {
 			return
 		}
 
-		pgInstance = &postgres{db}
+		pgInstance = &Postgres{db}
 	})
 
 	return pgInstance, nil
 }
 
-func (pg *postgres) Ping(ctx context.Context) error {
+func (pg *Postgres) Ping(ctx context.Context) error {
 	return pg.db.Ping(ctx)
 }
 
-func (pg *postgres) Close() {
+func (pg *Postgres) Close() {
 	pg.db.Close()
 }
