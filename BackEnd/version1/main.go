@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Walle692/D0018E/D0018E/Backend/version1/handlers"
-	"github.com/Walle692/D0018E/D0018E/Backend/version1/utils"
+	"github.com/Walle692/D0018E/BackEnd/version1/handlers"
+	"github.com/Walle692/D0018E/BackEnd/version1/utils"
 	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin" // requires "go install github.com/gin-gonic/gin@latest" to be ran
@@ -23,8 +23,10 @@ func setupRouter(pg *utils.Postgres) *gin.Engine {
 }
 
 func main() {
+	fmt.Println("Enable .env load")
 	godotenv.Load()
 
+	fmt.Println("Setting up pool")
 	pool, err := utils.NewPG(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Println("error setting up pool")
@@ -32,9 +34,11 @@ func main() {
 	}
 	defer pool.Close()
 
+	fmt.Println("Setting up router")
 	// this creates a router
 	router := setupRouter(pool)
 
+	fmt.Println("Starting router")
 	router.Run(":5000")
 
 }

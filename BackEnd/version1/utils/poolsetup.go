@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -17,14 +18,27 @@ var (
 )
 
 func NewPG(ctx context.Context, connString string) (*Postgres, error) {
+	var initErr error
+
 	pgOnce.Do(func() {
 		db, err := pgxpool.New(ctx, connString)
 		if err != nil {
+			initErr = err
 			return
 		}
 
 		pgInstance = &Postgres{db}
 	})
+
+	if initErr != nil {
+		fmt.Println("DEBUG: initerror")
+		return nil, initErr
+	}
+
+	if pgInstance == nil {
+		fmt.Println("DEBUG: Pg instance nil")
+		return nil, fmt.Errorf("postgres instance not initialized")
+	}
 
 	return pgInstance, nil
 }
