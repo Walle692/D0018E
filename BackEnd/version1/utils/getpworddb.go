@@ -24,10 +24,14 @@ func (pg *Postgres) GetPword(ctx context.Context, username string) (string, erro
 	fmt.Println("DEBUG 2")
 
 	if err == pgx.ErrNoRows {
+		fmt.Println("DEBUG: PASSWORD ERR NO ROWS")
 		// no user found
 		return "", errors.New("No user found")
 	} else if err != nil {
+		fmt.Println("DEBUG: PASSWORD OTHER GET ERROR")
+		fmt.Println(err)
 		// other error
+		return "", errors.New("Unhandled user error")
 	}
 
 	return storedPassword, nil
