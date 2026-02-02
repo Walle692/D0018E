@@ -39,6 +39,6 @@ func main() {
 	router := setupRouter(pool)
 
 	fmt.Println("Starting router")
-	router.Run(":5000")
+	router.Run("0.0.0.0:5000")
 
 }

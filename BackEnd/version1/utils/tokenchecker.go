@@ -10,7 +10,7 @@ import (
 func (pg *Postgres) TokenChecker(ctx context.Context, token string) (string, error) {
 
 	// query
-	query := "SELECT (uname, token_expires_at) FROM myschema.test WHERE token=$1"
+	query := "SELECT (uname, token_expires_at) FROM myschema.users WHERE token=$1"
 
 	var username string
 	var expires_at time.Time

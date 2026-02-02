@@ -16,7 +16,7 @@ func (pg *Postgres) GetPword(ctx context.Context, username string) (string, erro
 
 	fmt.Println("DEBUG 1")
 	// query
-	query := "SELECT pword FROM myschema.test WHERE uname=$1"
+	query := "SELECT pword FROM myschema.users WHERE uname=$1"
 
 	// query the database and select the password from the username and store in storedpassword
 	err := pg.db.QueryRow(ctx, query, username).Scan(&storedPassword)
