@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -13,11 +14,14 @@ func (pg *Postgres) GetPword(ctx context.Context, username string) (string, erro
 	// variable to store the Stored password if the user exists
 	var storedPassword string
 
+	fmt.Println("DEBUG 1")
 	// query
 	query := "SELECT pword FROM myschema.test WHERE uname=$1"
 
 	// query the database and select the password from the username and store in storedpassword
 	err := pg.db.QueryRow(ctx, query, username).Scan(&storedPassword)
+
+	fmt.Println("DEBUG 2")
 
 	if err == pgx.ErrNoRows {
 		// no user found
