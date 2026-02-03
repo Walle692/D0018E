@@ -10,7 +10,7 @@ import (
 )
 
 // login is a handler that parses a form and checks for specific data.
-func login(c *gin.Context) {
+func Login(c *gin.Context) {
 	session := sessions.Default(c)
 	username := c.PostForm("username")
 	password := c.PostForm("password")

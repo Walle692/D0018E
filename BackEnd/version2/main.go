@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/walle692/D0018E/BackEnd/version2/services"
+	"github.com/walle692/D0018E/BackEnd/version2/handlers"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 
 	"github.com/joho/godotenv"
