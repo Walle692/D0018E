@@ -12,21 +12,31 @@ func AuthenticateUser(pg *utils.Postgres, username, password string) (string, er
 
 	// get password from the databse
 	storedPassword, err := pg.GetPword(context.Background(), username)
+	if err != nil {
+		return "", err
+	}
 
+	// check entered password with stored password
 	if password != storedPassword {
 		// passwords didn't match
 		fmt.Print("problema")
 		return "", errors.New("invalid password")
 	}
 
-	// Generate JWT token
-	token, expires_at, err := utils.GenerateJWT(username)
+	// get the role of the user
+	role, err := pg.GetRole(context.Background, username)
+	if err != nil {
+		return "", err
+	}
+
+	// Generate JWT token using username and role
+	token, err := utils.GenerateJWT(username, role)
 	if err != nil {
 		return "", errors.New("failed to generate token")
 	}
 
 	// add the generated token to the db passing along the db connection
-	err = pg.TokenToDB(context.Background(), token, expires_at, username)
+	err = pg.TokenToDB(context.Background(), token, username)
 	if err != nil {
 		return "", errors.New("failed to bind token")
 	}

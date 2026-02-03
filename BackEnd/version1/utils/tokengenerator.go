@@ -9,13 +9,21 @@ import (
 
 var jwtKey = []byte(os.Getenv("JWT_KEY")) // Replace with a secure key
 
-func GenerateJWT(username string) (string, time.Time, error) {
-	expiry := time.Now().Add(time.Hour * 1)
+func GenerateJWT(username string, role string) (string, error) {
 
+	// creating the basis for the token with username and role, to add other stuff
+	// need to change the ClaimsCustom in that case
 	// key value pairs
-	claims := jwt.MapClaims{
-		"username": username,
-		"exp":      expiry.Unix(),
+	claims := ClaimsCustom {
+		username,
+		role
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:	   "test",
+			Subject:   username,
+		}
 	}
 
 	// creating the token
@@ -24,8 +32,8 @@ func GenerateJWT(username string) (string, time.Time, error) {
 	// signing the token
 	tokenstring, err := token.SignedString(jwtKey)
 	if err != nil {
-		return "", time.Time{}, err
+		return "", err
 	}
 
-	return tokenstring, expiry, nil
+	return tokenstring, nil
 }
