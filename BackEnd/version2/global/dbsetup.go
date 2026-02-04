@@ -2,7 +2,6 @@ package global
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,6 +18,10 @@ var (
 
 // function to inititalize the global pool
 func InitPG(ctx context.Context, connString string) error {
+	var pgErr error
+
+	pgErr = nil
+
 	pgOnce.Do(func() {
 		db, err := pgxpool.New(ctx, connString)
 		if err != nil {

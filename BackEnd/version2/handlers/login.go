@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-gonic/gin"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
-	"github.com/walle692/D0018E/BackEnd/version2/global"
+	"net/http"
+	"strings"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	"github.com/walle692/D0018E/BackEnd/version2/global"
+	"github.com/walle692/D0018E/BackEnd/version2/utils"
 )
 
 // login is a handler that parses a form and checks for specific data.
@@ -30,7 +31,7 @@ func Login(c *gin.Context) {
 	}
 
 	// save the username in the session
-	session.Set(global.userkey, username)
+	session.Set(global.Userkey, username)
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return

@@ -1,8 +1,9 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 )
@@ -10,7 +11,7 @@ import (
 // returns the username
 func Me(c *gin.Context) {
 	session := sessions.Default(c)
-	user := session.Get(userkey)
+	user := session.Get(global.Userkey)
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
