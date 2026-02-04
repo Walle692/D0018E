@@ -10,11 +10,23 @@ import (
 	"github.com/walle692/D0018E/BackEnd/version2/utils"
 )
 
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 // login is a handler that parses a form and checks for specific data.
 func Login(c *gin.Context) {
 	session := sessions.Default(c)
-	username := c.PostForm("username")
-	password := c.PostForm("password")
+
+	var req LoginRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+	}
+
+	username := strings.TrimSpace(req.Username)
+	password := strings.TrimSpace(req.Password)
 
 	// validate form input
 	if strings.Trim(username, " ") == "" || strings.Trim(password, " ") == "" {
