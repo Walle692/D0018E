@@ -1,11 +1,22 @@
-## To Test Version 1
+## To Test Version 2
 
-navigate to version 1 and use "go run ."
+# Step 1
 
-then in cmd use 
+Navigate into the version 2 folder
 
-curl -X POST http://localhost:5000/login -H "Content-Type: application/json" -d "{\"username\":\"yourusername\",\"password\":\"yourpassword\"}" -i
+# Step 2
 
-to add a user to the db use this
+Run "go mod tidy"
 
-INSERT INTO myschema.users (username, password,role) VALUES ('admin','admin','admin');
+# Step 3
+
+Run "go run ."
+
+# Step 4
+
+Use the following command in cli
+
+"curl -X POST http://localhost:5000/login -H "Content-Type: application/json" -d "{\"username\":\"yourusername\",\"password\":\"yourpassword\"}" -i"
+
+Be aware of the differences between linux and windows curl
+
