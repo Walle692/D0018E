@@ -12,9 +12,16 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin" // requires "go install github.com/gin-gonic/gin@latest" to be ran
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// initialize godotenv to be able to use env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// initialize pgpool
 	ctx := context.Background()
 
