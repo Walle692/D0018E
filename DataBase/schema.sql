@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS myschema.users (
     username VARCHAR(50) UNIQUE NOT NULL PRIMARY KEY,
     password VARCHAR(50) NOT NULL,
     role VARCHAR(10) NOT NULL,
-    token VARCHAR(256),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
