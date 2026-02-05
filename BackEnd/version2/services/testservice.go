@@ -12,7 +12,8 @@ import (
 func Me(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(global.Userkey)
-	c.JSON(http.StatusOK, gin.H{"user": user})
+	role := session.Get(global.Role)
+	c.JSON(http.StatusOK, gin.H{"user": user, "role": role})
 }
 
 // status will tell the user whether it is logged in or not.
