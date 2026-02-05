@@ -29,25 +29,27 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { login } from "@/services/auth";
-
-const form = reactive({ username: "", password: "" });
-
-async function onSubmit() {
-  try{
-    await login({username: form.username, password: form.password})
-    router.push("/user")
-  }catch(error){
-    error.value = e?.message || "Login failed";
-  }
-}
 
 const router = useRouter();
 
-function goToUser() {
-  router.push("/user");
+const form = reactive({ username: "", password: "" });
+const loading = ref(false);
+const error = ref("");
+
+async function onSubmit() {
+  error.value = "";
+  loading.value = true;
+
+  try {
+    await login({ username: form.username, password: form.password });
+    router.push("/user");
+  } catch (e) {
+    error.value = e?.message || "Login failed";
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
