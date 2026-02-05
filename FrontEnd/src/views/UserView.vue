@@ -47,7 +47,7 @@
           v-if="isAdmin"
           title="Create User"
           subtitle="Create new accounts"
-          @click="router.push('/admin/create-user')"
+          @click="() => {router.push('/admin/create-user') }"
         />
         <AccountCard
           v-if="isAdmin"

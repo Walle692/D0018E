@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card" @click="$emit('click')" role="button" tabindex="0">
     <h2 class="cardTitle">{{ title }}</h2>
     <p class="cardSub">{{ subtitle }}</p>
   </div>
@@ -10,6 +10,7 @@ defineProps({
   title: String,
   subtitle: String,
 });
+const emit = defineEmits(["click"]);
 </script>
 
 <style scoped>

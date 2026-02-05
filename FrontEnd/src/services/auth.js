@@ -32,3 +32,22 @@ export async function getMe() {
 
   return await res.json();
 }
+
+export async function createUser({ username, password, role }) {
+  const res = await fetch(`${BASE_URL}/admin/create-user`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username, password, role }),
+  });
+
+  if (!res.ok) {
+    // Try to read a useful error message
+    const text = await res.text().catch(() => "");
+    throw new Error(text || "Can't create user");
+  }
+
+  return true;
+}
+
+
