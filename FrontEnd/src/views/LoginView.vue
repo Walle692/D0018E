@@ -9,27 +9,47 @@
 
     <div class="loginCard">
       <h1>Login</h1>
+      <form @submit.prevent="onSubmit">
+        <label class="inputField">
+          <input v-model.trim="form.username" type="text" placeholder="Username">
+        </label>
+        
+        <label class="inputField">
+          <input v-model.trim="form.password" type="password" placeholder="Password">
+        </label>
 
-      <label class="inputField">
-        <input type="text" placeholder="Username">
-      </label>
-      
-      <label class="inputField">
-        <input type="password" placeholder="Password">
-      </label>
-
-      <button @click="goToUser">Log in</button> 
+        <button type="submit" :disabled="loading">
+          {{ loading ? "Logging in..." : "Log in" }}
+        </button>
+        <p v-if="error" class="error">{{ error }}</p>
+      </form> 
     </div>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from "vue-router";
+import { reactive, ref } from "vue";
+import { login } from "@/services/auth";
 
 const router = useRouter();
 
-function goToUser() {
-  router.push("/user");
+const form = reactive({ username: "", password: "" });
+const loading = ref(false);
+const error = ref("");
+
+async function onSubmit() {
+  error.value = "";
+  loading.value = true;
+
+  try {
+    await login({ username: form.username, password: form.password });
+    router.push("/user");
+  } catch (e) {
+    error.value = e?.message || "Login failed";
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 

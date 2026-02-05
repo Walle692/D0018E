@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 	"github.com/walle692/D0018E/BackEnd/version2/handlers"
@@ -13,6 +14,9 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin" // requires "go install github.com/gin-gonic/gin@latest" to be ran
 	"github.com/joho/godotenv"
+
+	// go get github.com/gin-contrib/cors
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -43,6 +47,18 @@ func engine() *gin.Engine {
 
 	// enable gin logging
 	r.Use(gin.Logger())
+
+	// ✅ CORS (put this BEFORE routes)
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:5001",    //For local tests
+			"http://13.60.56.204:5001", // This should be the frontend IP and port when hosted
+		},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true, // IMPORTANT for cookies/sessions
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// setup cookie store this will automatically handle session cookie read/write
 	r.Use(sessions.Sessions("session", cookie.NewStore([]byte(global.Secret))))
