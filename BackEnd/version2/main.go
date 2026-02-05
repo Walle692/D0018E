@@ -76,6 +76,11 @@ func engine() *gin.Engine {
 		private.GET("/me", services.Me)
 		private.GET("/status", services.Status)
 	}
+	admin := r.Group("/admin")
+	admin.Use(handlers.AuthenticateSession, handlers.AuthenticateAdminSession)
+	{
+		admin.POST("/create-user", services.MakeUser)
+	}
 
 	return r
 }
