@@ -10,32 +10,33 @@ import (
 )
 
 // function to get the password from a specific username on the db
-func GetPassword(username string) (string, error) {
+func GetPassword(username string) (string, string, error) {
 	ctx := context.Background()
 
 	// variable to store the Stored password if the user exists
 	var password string
+	var role string
 
 	// query
-	query := "SELECT password FROM myschema.users WHERE username=$1"
+	query := "SELECT password, role FROM myschema.users WHERE username=$1"
 
 	// get the db connection from global
 	postgres := global.Get()
 
 	// query the database and select the password from the username and store in password
-	err := postgres.Pool().QueryRow(ctx, query, username).Scan(&password)
+	err := postgres.Pool().QueryRow(ctx, query, username).Scan(&password, &role)
 
 	if err == pgx.ErrNoRows {
 		fmt.Println("DEBUG: PASSWORD ERR NO ROWS")
 		// no user found
-		return "", errors.New("No user found")
+		return "", "", errors.New("No user found")
 	} else if err != nil {
 		fmt.Println("DEBUG: PASSWORD OTHER GET ERROR")
 		fmt.Println(err)
 		// other error
-		return "", errors.New("Unhandled user error")
+		return "", "", errors.New("Unhandled user error")
 	}
 
-	return password, nil
+	return password, role, nil
 
 }

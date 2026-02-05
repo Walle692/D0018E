@@ -22,3 +22,14 @@ func AuthenticateSession(c *gin.Context) {
 	// user is authenticated, continue to the next handler
 	c.Next()
 }
+
+func AuthenticateAdminSession(c *gin.Context) {
+	sessions := sessions.Default(c)
+
+	role := sessions.Get(global.Role)
+	if role != "admin" {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	c.Next()
+}

@@ -22,6 +22,12 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/UserView.vue'),
     },
+        {
+      path: '/admin/create-user',
+      name: 'create-user',
+      component: () => import('../views/CreateUserView.vue')
+    },
+    
   ],
 })
 

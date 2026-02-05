@@ -58,7 +58,6 @@ async function onSubmit() {
 .container{
   display: flex;
   justify-content: center;
-  background: var(--bg);
   gap: 25px;
   padding: 25px 25px;
 }
