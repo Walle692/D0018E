@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS myschema.order (
     order_user_id INT NOT NULL,
     orderdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     totalprice FLOAT NOT NULL,
-    FOREIGN KEY (customer_user_id) REFERENCES myschema.users(user_id)
+    FOREIGN KEY (order_user_id) REFERENCES myschema.users(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS myschema.orderitem (
