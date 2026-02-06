@@ -25,7 +25,7 @@ go run .
 Use the following command in cli
 
 ```sh
-curl -X POST http://localhost:5000/login -H "Content-Type: application/json" -d "{\"username\":\"yourusername\",\"password\":\"yourpassword\"}" -i
+curl -X POST http://13.60.56.204:5000/login -H "Content-Type: application/json" -d "{\"username\":\"yourusername\",\"password\":\"yourpassword\"}" -i
 ```
 
 Be aware of the differences between linux and windows curl
