@@ -60,8 +60,18 @@ func engine() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
+	// new mr chat code to fix cookie issue
+	store := cookie.NewStore([]byte(global.Secret))
+	store.Options(sessions.Options{
+		Path:     "/",
+		MaxAge:   3600,
+		HttpOnly: true,
+		Secure:   false, // set true only when HTTPS
+	})
+	r.Use(sessions.Sessions("session", store))
+
 	// setup cookie store this will automatically handle session cookie read/write
-	r.Use(sessions.Sessions("session", cookie.NewStore([]byte(global.Secret))))
+	//r.Use(sessions.Sessions("session", cookie.NewStore([]byte(global.Secret))))
 
 	// routes for logging in and out
 	r.POST("/login", handlers.Login)
