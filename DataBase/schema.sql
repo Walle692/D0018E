@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS myschema.products (
     price FLOAT NOT NULL,
     stock INT NOT NULL,
     FOREIGN KEY (seller_user_id) REFERENCES myschema.users(user_id)
-)
+);
 
 CREATE TABLE IF NOT EXISTS myschema.order (
     order_id SERIAL PRIMARY KEY,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS myschema.order (
     orderdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     totalprice FLOAT NOT NULL,
     FOREIGN KEY (customer_user_id) REFERENCES myschema.users(user_id)
-)
+);
 
 CREATE TABLE IF NOT EXISTS myschema.orderitem (
     order_item_id SERIAL PRIMARY KEY,
@@ -47,13 +47,13 @@ CREATE TABLE IF NOT EXISTS myschema.orderitem (
     price FLOAT NOT NULL,
     FOREIGN KEY (order_id) REFERENCES myschema.order(order_id),
     FOREIGN KEY (product_id) REFERENCES myschema.products(product_id)
-)
+);
 
 CREATE TABLE IF NOT EXISTS myschema.basket (
     basket_id SERIAL PRIMARY KEY,
     basket_user_id INT NOT NULL,
     FOREIGN KEY (basket_user_id) REFERENCES myschema.users(user_id)
-)
+);
 
 CREATE TABLE IF NOT EXISTS myschema.basketitem (
     basket_item_id SERIAL PRIMARY KEY,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS myschema.basketitem (
     price FLOAT NOT NULL,
     FOREIGN KEY (basket_id) REFERENCES myschema.basket(basket_id),
     FOREIGN KEY (product_id) REFERENCES myschema.products(product_id)
-)
+);
 
 
 /* Legacy incase of nuke
