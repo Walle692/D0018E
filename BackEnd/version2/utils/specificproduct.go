@@ -14,20 +14,7 @@ import (
 func GetSpecificProduct(c *gin.Context, productID int) ([]byte, error) {
 	ctx := context.Background()
 
-	type ProductStruct struct {
-		Product_id     int     `json:"product_id"`
-		Product_name   string  `json:"product_name"`
-		Manufacturer   string  `json:"manufacturer"`
-		Seller_user_id int     `json:"seller_user_id"`
-		Description    string  `json:"description"`
-		Screen_size    float32 `json:"screen_size"`
-		Picture_url    string  `json:"picture_url"`
-		Sku            string  `json:"sku"`
-		Price          float32 `json:"price"`
-		Stock          int     `json:"stock"`
-	}
-
-	var p ProductStruct
+	var p global.ProductStruct
 
 	// query
 	query := "SELECT * FROM myschema.products WHERE product_id=$1"

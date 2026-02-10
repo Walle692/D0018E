@@ -38,6 +38,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { getProducts } from "@/services/auth";
 
 const router = useRouter();
 
@@ -56,11 +57,7 @@ async function fetchProducts() {
   error.value = "";
 
   try {
-    const res = await fetch("/products");
-    if (!res.ok) {
-      throw new Error(`Request failed: ${res.status}`);
-    }
-    const data = await res.json();
+    const data = await getProducts();
     products.value = Array.isArray(data) ? data : data?.products || [];
   } catch (e) {
     error.value = e?.message || "Failed to load products";
