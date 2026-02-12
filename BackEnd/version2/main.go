@@ -9,6 +9,7 @@ import (
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 	"github.com/walle692/D0018E/BackEnd/version2/handlers"
 	"github.com/walle692/D0018E/BackEnd/version2/services"
+	"github.com/walle692/D0018E/BackEnd/version2/utils"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -86,6 +87,7 @@ func engine() *gin.Engine {
 		private.GET("/me", services.Me)
 		private.GET("/status", services.Status)
 		private.GET("/products", services.GetProducts)
+		private.GET("/products/:id", utils.GetProduct)
 	}
 	admin := r.Group("/admin")
 	admin.Use(handlers.AuthenticateSession, handlers.AuthenticateAdminSession)

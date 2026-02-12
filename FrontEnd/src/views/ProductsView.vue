@@ -11,7 +11,7 @@
     <div v-else-if="products.length === 0" class="state">No products found.</div>
 
     <div v-else class="grid">
-      <article v-for="p in products" :key="p.product_id || p.product_id || p.picture_url" class="product-card">
+      <article v-for="p in products" :key="p.product_id || p.product_id || p.picture_url" class="product-card" @click="router.push(`/products/${p.product_id}`)">
         <div class="image-wrap">
           <img
             v-if="p.picture_url"
