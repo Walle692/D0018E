@@ -11,19 +11,19 @@
     <div v-else-if="products.length === 0" class="state">No products found.</div>
 
     <div v-else class="grid">
-      <article v-for="p in products" :key="p.id || p.product_id || p.url" class="product-card">
+      <article v-for="p in products" :key="p.product_id || p.product_id || p.picture_url" class="product-card">
         <div class="image-wrap">
           <img
-            v-if="p.image_url"
-            :src="p.image_url"
-            :alt="p.name || 'Product image'"
+            v-if="p.picture_url"
+            :src="p.picture_url"
+            :alt="p.product_name || 'Product image'"
             loading="lazy"
           />
           <div v-else class="image-fallback">No image</div>
         </div>
 
         <div class="info">
-          <h3 class="name">{{ p.name || "Unnamed product" }}</h3>
+          <h3 class="name">{{ p.product_name || "Unnamed product" }}</h3>
           <div class="price">{{ formatPrice(p.price) }}</div>
         </div>
       </article>
