@@ -85,6 +85,7 @@ func engine() *gin.Engine {
 	{
 		private.GET("/me", services.Me)
 		private.GET("/status", services.Status)
+		private.GET("/products", services.GetProducts)
 	}
 	admin := r.Group("/admin")
 	admin.Use(handlers.AuthenticateSession, handlers.AuthenticateAdminSession)

@@ -1,152 +1,155 @@
-
-<!-- src/views/ProductsView.vue -->
+﻿<!-- src/views/ProductsView.vue -->
 <template>
   <div class="page">
-    <h1>ProductsView</h1>
-    <p class="subtitle">LOOK AT ALL OUR PRODUCTS WE HAVE FOR SALE!</p>
+    <div class="header">
+      <h1>Products</h1>
+      <p class="subtitle">Browse our latest products</p>
+    </div>
 
-    <div class="card">
-      <form @submit.prevent="onSubmit">
-        <label class="field">
-          <span>Username</span>
-          <input
-            v-model.trim="form.username"
-            type="text"
-            placeholder="e.g. john123"
-            autocomplete="username"
+    <div v-if="loading" class="state">Loading products...</div>
+    <div v-else-if="error" class="state error">{{ error }}</div>
+    <div v-else-if="products.length === 0" class="state">No products found.</div>
+
+    <div v-else class="grid">
+      <article v-for="p in products" :key="p.product_id || p.product_id || p.picture_url" class="product-card">
+        <div class="image-wrap">
+          <img
+            v-if="p.picture_url"
+            :src="p.picture_url"
+            :alt="p.product_name || 'Product image'"
+            loading="lazy"
           />
-        </label>
+          <div v-else class="image-fallback">No image</div>
+        </div>
 
-        <label class="field">
-          <span>Password</span>
-          <input
-            v-model="form.password"
-            type="password"
-            placeholder="Enter a password"
-            autocomplete="new-password"
-          />
-        </label>
-
-        <label class="field">
-          <span>Role</span>
-          <select v-model="form.role">
-            <option value="buyer">buyer</option>
-            <option value="seller">seller</option>
-            <option value="admin">admin</option>
-          </select>
-        </label>
-
-        <button type="submit" :disabled="loading || !canSubmit">
-          {{ loading ? "Creating..." : "Create user" }}
-        </button>
-
-        <p v-if="success" class="success">{{ success }}</p>
-        <p v-if="error" class="error">{{ error }}</p>
-      </form>
+        <div class="info">
+          <h3 class="name">{{ p.product_name || "Unnamed product" }}</h3>
+          <div class="price">{{ formatPrice(p.price) }}</div>
+        </div>
+      </article>
     </div>
 
     <button class="linkBtn" type="button" @click="router.push('/user')">
-      ← Back to account
+      <- Back to account
     </button>
   </div>
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { createUser } from "@/services/auth";
+import { getProducts } from "@/services/auth";
 
 const router = useRouter();
 
-const form = reactive({
-  username: "",
-  password: "",
-  role: "buyer",
-});
-
+const products = ref([]);
 const loading = ref(false);
 const error = ref("");
-const success = ref("");
 
-const canSubmit = computed(() => form.username.length > 0 && form.password.length > 0);
+function formatPrice(price) {
+  if (price === null || price === undefined || price === "") return "Price unavailable";
+  if (typeof price === "number") return `${price} kr`;
+  return `${price}`;
+}
 
-async function onSubmit() {
-  // Prepared for backend integration:
-  // Later you will call something like:
-  // await adminCreateUser({ username: form.username, password: form.password, role: form.role });
-
-  error.value = "";
-  success.value = "";
+async function fetchProducts() {
   loading.value = true;
+  error.value = "";
 
   try {
-    await createUser({ username: form.username, password: form.password, role: form.role });
+    const data = await getProducts();
+    products.value = Array.isArray(data) ? data : data?.products || [];
   } catch (e) {
-    error.value = e?.message || "User creation failed";
+    error.value = e?.message || "Failed to load products";
   } finally {
     loading.value = false;
   }
 }
+
+onMounted(fetchProducts);
 </script>
 
 <style scoped>
 .page {
   padding: 24px;
-  max-width: 720px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .subtitle {
-  margin-top: 6px;
   opacity: 0.8;
 }
 
-.card {
+.state {
   margin-top: 16px;
-  border: 1px solid var(--border);
+}
+
+.state.error {
+  color: #b00020;
+}
+
+.grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.product-card {
+  border: 1px solid var(--border, #ddd);
   border-radius: 10px;
-  padding: 16px;
-  background: var(--surface);
+  background: var(--surface, #fff);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
 }
 
-.field {
-  display: block;
-  margin: 14px 0;
-}
-
-.field span {
-  display: block;
-  margin-bottom: 6px;
-}
-
-input,
-select {
+.image-wrap {
   width: 100%;
-  box-sizing: border-box;
+  height: 140px;
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.image-fallback {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.info {
   padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #bbb;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-button {
-  width: 100%;
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #bbb;
-  cursor: pointer;
+.name {
+  font-size: 14px;
+  line-height: 1.2;
+  margin: 0;
 }
 
-.success {
-  margin-top: 10px;
-}
-
-.error {
-  margin-top: 10px;
+.price {
+  font-weight: 600;
 }
 
 .linkBtn {
   width: auto;
-  margin-top: 14px;
+  margin-top: 18px;
 }
 </style>
