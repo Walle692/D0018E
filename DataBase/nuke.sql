@@ -1,0 +1,12 @@
+DELETE FROM myschema.products;
+DELETE FROM myschema.basketitem;
+DELETE FROM myschema.orderitem;
+DELETE FROM myschema.order;
+DELETE FROM myschema.basket;
+DELETE FROM myschema.users;
+DELETE FROM myschema.products;
+DELETE FROM myschema.basketitem;
+DELETE FROM myschema.orderitem;
+DELETE FROM myschema.order;
+DELETE FROM myschema.basket;
+DELETE FROM myschema.users;
