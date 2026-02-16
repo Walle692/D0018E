@@ -51,7 +51,7 @@ async function fetchProduct() {
   product.value = null;
 
   try {
-    const data = await getProductById(router.params.id);
+    const data = await getProductById(router.currentRoute.value.params.id);
     product.value = data;
   } catch (e) {
     error.value = e?.message || "Failed to load product";
