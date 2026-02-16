@@ -23,6 +23,8 @@ func AddToBasket(c *gin.Context) {
 		return
 	}
 
+	fmt.Printf("DEBUG: AddToBasketRequest: %+v\n", req)
+
 	// get the users basket id
 	basketID, err := utils.GetBasketID(c)
 	if err != nil {
