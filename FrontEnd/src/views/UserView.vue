@@ -11,6 +11,13 @@
       <div class="grid">
 
         <AccountCard
+          v-show="!isSeller"
+          title="View Products"
+          subtitle="View products and make purchases"
+          @click="router.push('/products')"
+        />
+
+        <AccountCard
           v-show="!isSellerOrAdmin"
           title="Your Orders"
           subtitle="Track, return or buy again"
