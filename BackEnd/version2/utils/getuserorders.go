@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 )
 
@@ -33,11 +34,20 @@ type OrderResponse struct {
 	Total_price float64                `json:"totalprice"`
 }
 
-func GetUserOrders(userId int) ([]OrderResponse, error) {
+func GetUserOrders(userID int) ([]OrderResponse, error) {
 
 	ctx := context.Background()
-	postgres := global.Get()
+	pool := global.Get().Pool()
 
+	orderRoot, err := fetchOrders(ctx, pool, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return orderRoot, nil
+}
+
+func fetchOrders(ctx context.Context, pool *pgxpool.Pool, userID int) ([]OrderResponse, error) {
 	orderIdQuery := `--sql
 		SELECT order_id, orderdate, totalprice 
 		FROM myschema.order 
@@ -46,12 +56,11 @@ func GetUserOrders(userId int) ([]OrderResponse, error) {
 
 	orderRoot := make([]OrderResponse, 0)
 
-	rows, err := postgres.Pool().Query(ctx, orderIdQuery, userId)
+	rows, err := pool.Query(ctx, orderIdQuery, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-
 	for rows.Next() {
 		var o OrderResponse
 		if err := rows.Scan(&o.Order_id, &o.Order_date, &o.Total_price); err != nil {
@@ -62,6 +71,15 @@ func GetUserOrders(userId int) ([]OrderResponse, error) {
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-
 	return orderRoot, nil
+}
+
+func fetchOrderItems(ctx context.Context, pool *pgxpool.Pool, orderID int) {
+	orderItemQuery := `--sql
+			SELECT product_id, quantity, price
+			FROM myschema.orderitem
+			WHERE order_id = $1
+	`
+	_ = orderItemQuery
+	return
 }
