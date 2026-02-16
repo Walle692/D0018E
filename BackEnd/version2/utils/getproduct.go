@@ -51,17 +51,6 @@ func GetProduct(c *gin.Context) {
 		return
 	}
 
-	/*
-		// make the struct into acutal json
-		productJSON, err := json.Marshal(p)
-		if err != nil {
-			fmt.Println("DEBUG: PRODUCT JSON MARSHAL ERROR")
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process product data"})
-			return
-		}
-		fmt.Println(productJSON)
-	*/
-
 	// send the json to the client
 	c.JSON(http.StatusOK, p)
 }

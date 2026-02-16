@@ -78,4 +78,15 @@ export async function getProductById(id) {
   return await res.json();
 }
 
+export async function addToBasket(productId, quantity) {
+  const res = await fetch(`${BASE_URL}/private/basket/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ product_id: productId, quantity }),
+  });
+
+  return res.ok;
+}
+
 

@@ -25,6 +25,10 @@
             <div class="price">{{ product.price }}</div>
             <p class="description">{{ product.description || "No description available." }}</p>
         </div>
+
+        <button type="button" @click="addToBasket(product.product_id, 1)">
+          Add to 1 to basket
+        </button>
     </div>
 
     <button class="linkBtn" type="button" @click="router.push('/products')">
