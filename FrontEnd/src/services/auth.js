@@ -64,4 +64,29 @@ export async function getProducts() {
   return await res.json();
 }
 
+export async function getProductById(id) {
+  const res = await fetch(`${BASE_URL}/private/products/${id}`, {
+    method: "GET",
+    credentials: "include"
+  });
+
+  if(!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(text || "get product failed")
+  }
+
+  return await res.json();
+}
+
+export async function addToBasket(productId, quantity) {
+  const res = await fetch(`${BASE_URL}/private/basket/add`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ product_id: productId, quantity }),
+  });
+
+  return res.ok;
+}
+
 
