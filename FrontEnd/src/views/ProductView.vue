@@ -9,7 +9,7 @@
     <div v-if="loading" class="state">Loading product...</div>
     <div v-else-if="error" class="state error">{{ error }}</div>
 
-    <div v-else class="product details"> 
+    <div v-else-if="product" class="product details"> 
         <div class="image-wrap">
           <img
             v-if="product.picture_url"
@@ -42,15 +42,16 @@ import { getProductById } from "@/services/auth";
 const router = useRouter();
 
 const product = ref(null);
-const loading = ref(false);
+const loading = ref(true);
 const error = ref("");
 
 async function fetchProduct() {
   loading.value = true;
   error.value = "";
+  product.value = null;
 
   try {
-    const data = await getProductById(router.currentRoute.value.params.id);
+    const data = await getProductById(router.params.id);
     product.value = data;
   } catch (e) {
     error.value = e?.message || "Failed to load product";
