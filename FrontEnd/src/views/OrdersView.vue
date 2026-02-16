@@ -1,45 +1,44 @@
 <template>
-  <div class="container">
+  <div class="page">
     <div class="card">
       <h1>My Orders</h1>
 
       <p v-if="loading">Loading...</p>
       <p v-else-if="error" class="error">{{ error }}</p>
 
-      <div v-else>
-        <p v-if="orders.length === 0">No orders yet.</p>
+      <template v-else>
+        <p v-if="orders.length === 0" class="muted">No orders yet.</p>
 
         <div v-for="o in orders" :key="o.order_id" class="order">
-          <div class="order-header">
+          <div class="orderHeader">
             <div>
-              <div>
-                <b>Order #{{ o.order_id }}</b>
-              </div>
+              <div class="orderTitle">Order #{{ o.order_id }}</div>
               <div class="muted">{{ formatDate(o.orderdate) }}</div>
             </div>
-            <div class="total">
-              Total: <b>{{ money(o.totalprice) }}</b>
-            </div>
+            <div class="total">Total: {{ money(o.totalprice) }}</div>
           </div>
 
           <div class="items">
             <div v-for="(it, idx) in o.order_items" :key="idx" class="item">
-              <img v-if="it.product?.picture_url" :src="it.product.picture_url" class="thumb" />
-              <div class="item-info">
-                <router-link :to="`/products/${it.product.product_id}`" class="product-link">
+              <img
+                v-if="it.product?.picture_url"
+                :src="it.product.picture_url || placeholderImg"
+                class="thumb"
+                alt=""
+                @error="onImgError"
+              />
+
+              <div class="info">
+                <router-link :to="`/products/${it.product.product_id}`" class="name">
                   {{ it.product.product_name }}
                 </router-link>
-                <div class="muted">
-                  Qty: <b>{{ it.quantity }}</b> · Price: <b>{{ money(it.price) }}</b>
-                </div>
+
+                <div class="muted">Qty: {{ it.quantity }} · Price: {{ money(it.price) }}</div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- debug -->
-        <!-- <pre>{{ orders }}</pre> -->
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -65,20 +64,28 @@ onMounted(async () => {
   }
 })
 
-function formatDate(d) {
+import placeholderImg from '@/assets/placeholder.webp'
+
+const onImgError = (e) => {
+  e.target.src = placeholderImg
+}
+
+const formatDate = (d) => {
   const dt = new Date(d)
   return Number.isNaN(dt.getTime()) ? String(d) : dt.toLocaleString()
 }
-function money(x) {
+
+const money = (x) => {
   const n = Number(x)
   return Number.isNaN(n) ? String(x) : n.toFixed(2)
 }
 </script>
 
 <style scoped>
-.container {
-  max-width: 900px;
-  margin: 30px auto;
+/* Make it wider by increasing max-width or removing it entirely */
+.page {
+  max-width: 1100px; /* <- change this */
+  margin: 24px auto;
   padding: 0 16px;
 }
 
@@ -88,23 +95,39 @@ function money(x) {
   border-radius: 10px;
 }
 
+h1 {
+  margin: 0 0 12px;
+}
+
 .error {
   color: #b00020;
-  margin-top: 10px;
+}
+
+.muted {
+  color: #666;
+  font-size: 13px;
 }
 
 .order {
+  margin-top: 14px;
+  padding: 14px;
   border: 1px solid #e5e5e5;
   border-radius: 10px;
-  padding: 14px;
-  margin-top: 14px;
 }
 
-.order-header {
+.orderHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+}
+
+.orderTitle {
+  font-weight: 700;
+}
+
+.total {
+  font-weight: 700;
 }
 
 .items {
@@ -121,34 +144,28 @@ function money(x) {
 }
 
 .thumb {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
+  width: 64px;
+  height: 64px;
   border-radius: 8px;
   border: 1px solid #eee;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.item-info {
+.info {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
-.product-link {
+.name {
   font-weight: 700;
   text-decoration: none;
 }
 
-.product-link:hover {
+.name:hover {
   text-decoration: underline;
-}
-
-.muted {
-  color: #666;
-  font-size: 13px;
-  margin-top: 2px;
-}
-
-.total {
-  font-size: 16px;
 }
 </style>
