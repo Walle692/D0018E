@@ -10,33 +10,6 @@ import (
 	"github.com/walle692/D0018E/BackEnd/version2/utils"
 )
 
-//Can return multiple orders
-
-type orderItemResponse struct {
-	Product_id     int     `json:"product_id"`
-	Product_name   string  `json:"product_name"`
-	Manufacturer   string  `json:"manufacturer"`
-	Seller_user_id int     `json:"seller_user_id"`
-	Description    string  `json:"description"`
-	Screen_size    float32 `json:"screen_size"`
-	Picture_url    string  `json:"picture_url"`
-	Sku            string  `json:"sku"`
-	Price          float32 `json:"price"`
-	Stock          int     `json:"stock"`
-}
-
-type orderProductResponse struct {
-	Product  []orderItemResponse `json:"product"`
-	Quantity int                 `json:"quantity"`
-	Price    float32             `json:"price"`
-}
-
-type orderResponse struct {
-	Order_items []orderProductResponse `json:"order_items"`
-	Order_date  string                 `json:"orderdate"`
-	Total_price float64                `json:"totalprice"`
-}
-
 /*
 Test that function correctly returns none, one, and two orders
 */
@@ -108,20 +81,26 @@ func TestOrderItems(t *testing.T) {
 		out, err := utils.GetUserOrders(buyerID)
 		require.NoError(t, err)
 
-		require.Len(t, out, 1)
 		require.Len(t, out[0].Order_items, 1)
 	})
 	t.Run("2 order item", func(t *testing.T) {
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+suffix(), "buyer")
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, 1)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p1, 100, 100)
-		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p2, 100, 100)
+		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p2, 200, 200)
 
 		out, err := utils.GetUserOrders(buyerID)
 		require.NoError(t, err)
 
-		require.Len(t, out, 2)
-		require.Len(t, out[0].Order_items, 1)
+		require.Len(t, out[0].Order_items, 2)
+
+		items := out[0].Order_items
+		require.Equal(t, items[0].Quantity, 100)
+		require.Equal(t, items[1].Quantity, 200)
+
+		require.Equal(t, items[0].Product.Product_id, p1)
+		require.Equal(t, items[1].Product.Product_id, p2)
+
 	})
 }
 
