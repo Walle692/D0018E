@@ -3,17 +3,31 @@ package utils
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 )
 
-func GetSpecificProduct(c *gin.Context, productID int) ([]byte, error) {
+func GetProduct(c *gin.Context) {
 	ctx := context.Background()
 
+	// string
+	productIDsting := c.Param("id")
+
+	// convert string to int
+	productID, err := strconv.Atoi(productIDsting)
+	if err != nil {
+		fmt.Println("DEBUG: PRODUCT ID CONVERSION ERROR")
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
+		return
+	}
+
+	// create struct for the product
 	var p global.ProductStruct
 
 	// query
@@ -22,27 +36,30 @@ func GetSpecificProduct(c *gin.Context, productID int) ([]byte, error) {
 	// get the db connection from global
 	postgres := global.Get()
 
-	// query the database and select the password from the username and store in password
-	err := postgres.Pool().QueryRow(ctx, query, productID).Scan(&p.Product_id, &p.Product_name, &p.Manufacturer, &p.Seller_user_id, &p.Description, &p.Screen_size, &p.Picture_url, &p.Sku, &p.Price, &p.Stock)
+	// query the database and scan the result into the struct
+	err = postgres.Pool().QueryRow(ctx, query, productID).Scan(&p.Product_id, &p.Product_name, &p.Manufacturer, &p.Seller_user_id, &p.Description, &p.Screen_size, &p.Picture_url, &p.Sku, &p.Price, &p.Stock)
 
 	if err == pgx.ErrNoRows {
 		fmt.Println("DEBUG: PRODUCT ERR NO ROWS")
-		// no user found
-		return make([]byte, 0), errors.New("No user found")
+		// no product found
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Product not found"})
+		return
 	} else if err != nil {
 		fmt.Println("DEBUG: PRODUCT OTHER GET ERROR")
 		fmt.Println(err)
 		// other error
-		return make([]byte, 0), errors.New("Unhandled product error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unexpected error"})
+		return
 	}
 
 	// make the struct into acutal json
 	productJSON, err := json.Marshal(p)
 	if err != nil {
 		fmt.Println("DEBUG: PRODUCT JSON MARSHAL ERROR")
-		fmt.Println(err)
-		return make([]byte, 0), errors.New("couldn't marshal json")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process product data"})
+		return
 	}
 
-	return productJSON, nil
+	// send the json to the client
+	c.JSON(http.StatusOK, productJSON)
 }
