@@ -56,15 +56,15 @@ func SeedProduct(t *testing.T, ctx context.Context, pool *pgxpool.Pool, sellerID
 	return productID
 }
 
-func SeedOrder(t *testing.T, ctx context.Context, pool *pgxpool.Pool, buyerID int, orderDate string, totalPrice float64) (orderID int) {
+func SeedOrder(t *testing.T, ctx context.Context, pool *pgxpool.Pool, buyerID int, totalPrice float64) (orderID int) {
 	t.Helper()
 
 	orderQuery := `--sql
 		INSERT INTO myschema.order (order_user_id, orderdate, totalprice)
-		VALUES ($1, $2, $3)
+		VALUES ($1, NOW(), $2)
 		RETURNING order_id
 	`
-	err := pool.QueryRow(ctx, orderQuery, buyerID, orderDate, totalPrice).Scan(&orderID)
+	err := pool.QueryRow(ctx, orderQuery, buyerID, totalPrice).Scan(&orderID)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
