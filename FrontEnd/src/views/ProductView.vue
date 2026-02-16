@@ -41,13 +41,22 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { getProductById } from "@/services/auth";
+import { getProductById, addToBasket as addToBasketApi } from "@/services/auth";
 
 const router = useRouter();
 
 const product = ref(null);
 const loading = ref(true);
 const error = ref("");
+
+async function addToBasket(productId, quantity) {
+  try {
+    await addToBasketApi(productId, quantity);
+    alert("Product added to basket!");
+  } catch (e) {
+    alert(e?.message || "Failed to add product to basket");
+  }
+}
 
 async function fetchProduct() {
   loading.value = true;
