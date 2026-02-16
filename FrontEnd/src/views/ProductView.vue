@@ -2,8 +2,8 @@
 <template>
   <div class="page">
     <div class="header">
-      <h1>Products</h1>
-      <p class="subtitle">Browse our latest products</p>
+      <h1>Check out this awsome screen</h1>
+      <p class="subtitle">Buy it</p>
     </div>
 
     <div v-if="loading" class="state">Loading product...</div>
@@ -45,7 +45,7 @@ const product = ref([]);
 const loading = ref(false);
 const error = ref("");
 
-async function fetchProducts() {
+async function fetchProduct() {
   loading.value = true;
   error.value = "";
 
@@ -59,5 +59,5 @@ async function fetchProducts() {
   }
 }
 
-onMounted(fetchProducts);
+onMounted(fetchProduct);
 </script>

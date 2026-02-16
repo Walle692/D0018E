@@ -18,6 +18,9 @@ func GetProduct(c *gin.Context) {
 	// string
 	productIDsting := c.Param("id")
 
+	fmt.Println("DEBUG: GET PRODUCT ID STRING")
+	fmt.Println(productIDsting)
+
 	// convert string to int
 	productID, err := strconv.Atoi(productIDsting)
 	if err != nil {
@@ -59,6 +62,7 @@ func GetProduct(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process product data"})
 		return
 	}
+	fmt.Println(productJSON)
 
 	// send the json to the client
 	c.JSON(http.StatusOK, productJSON)
