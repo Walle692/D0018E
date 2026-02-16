@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-contrib/sessions"
@@ -46,7 +47,8 @@ func Login(c *gin.Context) {
 	// save the username in the session
 	session.Set(global.Userkey, username)
 	session.Set(global.Role, role)
-	session.Set(global.UserID, userID)
+	// Store int as an string for edge cases
+	session.Set(global.UserID, strconv.Itoa(userID))
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
