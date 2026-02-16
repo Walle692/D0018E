@@ -11,7 +11,12 @@
     <div v-else-if="products.length === 0" class="state">No products found.</div>
 
     <div v-else class="grid">
-      <article v-for="p in products" :key="p.product_id || p.product_id || p.picture_url" class="product-card" @click="router.push(`/products/${p.product_id}`)">
+      <article
+        v-for="p in products"
+        :key="p.product_id || p.product_id || p.picture_url"
+        class="product-card"
+        @click="router.push(`/products/${p.product_id}`)"
+      >
         <div class="image-wrap">
           <img
             v-if="p.picture_url"
@@ -23,50 +28,48 @@
         </div>
 
         <div class="info">
-          <h3 class="name">{{ p.product_name || "Unnamed product" }}</h3>
+          <h3 class="name">{{ p.product_name || 'Unnamed product' }}</h3>
           <div class="price">{{ formatPrice(p.price) }}</div>
         </div>
       </article>
     </div>
 
-    <button class="linkBtn" type="button" @click="router.push('/user')">
-      <- Back to account
-    </button>
+    <button class="linkBtn" type="button" @click="router.push('/user')"><- Back to account</button>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { getProducts } from "@/services/auth";
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { getProducts } from '@/services/auth'
 
-const router = useRouter();
+const router = useRouter()
 
-const products = ref([]);
-const loading = ref(false);
-const error = ref("");
+const products = ref([])
+const loading = ref(false)
+const error = ref('')
 
 function formatPrice(price) {
-  if (price === null || price === undefined || price === "") return "Price unavailable";
-  if (typeof price === "number") return `${price} kr`;
-  return `${price}`;
+  if (price === null || price === undefined || price === '') return 'Price unavailable'
+  if (typeof price === 'number') return `${price} kr`
+  return `${price}`
 }
 
 async function fetchProducts() {
-  loading.value = true;
-  error.value = "";
+  loading.value = true
+  error.value = ''
 
   try {
-    const data = await getProducts();
-    products.value = Array.isArray(data) ? data : data?.products || [];
+    const data = await getProducts()
+    products.value = Array.isArray(data) ? data : data?.products || []
   } catch (e) {
-    error.value = e?.message || "Failed to load products";
+    error.value = e?.message || 'Failed to load products'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
-onMounted(fetchProducts);
+onMounted(fetchProducts)
 </script>
 
 <style scoped>
