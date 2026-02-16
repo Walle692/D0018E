@@ -1,4 +1,3 @@
-
 <!-- src/views/CreateUserView.vue -->
 <template>
   <div class="page">
@@ -37,7 +36,7 @@
         </label>
 
         <button type="submit" :disabled="loading || !canSubmit">
-          {{ loading ? "Creating..." : "Create user" }}
+          {{ loading ? 'Creating...' : 'Create user' }}
         </button>
 
         <p v-if="success" class="success">{{ success }}</p>
@@ -45,46 +44,44 @@
       </form>
     </div>
 
-    <button class="linkBtn" type="button" @click="router.push('/user')">
-      ← Back to account
-    </button>
+    <button class="linkBtn" type="button" @click="router.push('/user')">← Back to account</button>
   </div>
 </template>
 
 <script setup>
-import { computed, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
-import { createUser } from "@/services/auth";
+import { computed, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { createUser } from '@/services/auth'
 
-const router = useRouter();
+const router = useRouter()
 
 const form = reactive({
-  username: "",
-  password: "",
-  role: "buyer",
-});
+  username: '',
+  password: '',
+  role: 'buyer',
+})
 
-const loading = ref(false);
-const error = ref("");
-const success = ref("");
+const loading = ref(false)
+const error = ref('')
+const success = ref('')
 
-const canSubmit = computed(() => form.username.length > 0 && form.password.length > 0);
+const canSubmit = computed(() => form.username.length > 0 && form.password.length > 0)
 
 async function onSubmit() {
   // Prepared for backend integration:
   // Later you will call something like:
   // await adminCreateUser({ username: form.username, password: form.password, role: form.role });
 
-  error.value = "";
-  success.value = "";
-  loading.value = true;
+  error.value = ''
+  success.value = ''
+  loading.value = true
 
   try {
-    await createUser({ username: form.username, password: form.password, role: form.role });
+    await createUser({ username: form.username, password: form.password, role: form.role })
   } catch (e) {
-    error.value = e?.message || "User creation failed";
+    error.value = e?.message || 'User creation failed'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 </script>

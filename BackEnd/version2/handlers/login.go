@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-contrib/sessions"
@@ -35,7 +36,7 @@ func Login(c *gin.Context) {
 	}
 
 	// check for username and password match, usually from a database
-	dbpassword, role, err := utils.GetPassword(username)
+	dbpassword, role, userID, err := utils.GetPassword(username)
 	// if there is error or passwords do not match failure
 	if err != nil || dbpassword != password {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
@@ -46,6 +47,8 @@ func Login(c *gin.Context) {
 	// save the username in the session
 	session.Set(global.Userkey, username)
 	session.Set(global.Role, role)
+	// Store int as an string for edge cases
+	session.Set(global.UserID, strconv.Itoa(userID))
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return

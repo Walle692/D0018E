@@ -2,18 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import UserView from '../views/UserView.vue'
 import ProductsView from '@/views/ProductsView.vue'
+import OrdersView from '@/views/OrdersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      redirect: '/login',
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/LoginView.vue'),
     },
     {
       path: '/user',
@@ -23,22 +24,26 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/UserView.vue'),
     },
-        {
+    {
       path: '/admin/create-user',
       name: 'create-user',
-      component: () => import('../views/CreateUserView.vue')
+      component: () => import('../views/CreateUserView.vue'),
     },
     {
       path: '/products',
       name: 'products',
-      component: () => import('../views/ProductsView.vue')
+      component: () => import('../views/ProductsView.vue'),
     },
     {
-      path : '/products/:id',
-      name : 'product-details',
-      component : () => import('../views/ProductView.vue')
-    }
-    
+      path: '/products/:id',
+      name: 'product-details',
+      component: () => import('../views/ProductView.vue'),
+    },
+    {
+      path: '/orders',
+      name: 'orders',
+      component: () => import('../views/OrdersView.vue'),
+    },
   ],
 })
 

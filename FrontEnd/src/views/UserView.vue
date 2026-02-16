@@ -6,10 +6,11 @@
     <p v-else-if="error" class="error">{{ error }}</p>
 
     <div v-else>
-      <p>Welcome, <b>{{ me.user }}</b> ({{ me.role }})</p>
+      <p>
+        Welcome, <b>{{ me.user }}</b> ({{ me.role }})
+      </p>
 
       <div class="grid">
-
         <AccountCard
           v-show="!isSeller"
           title="View Products"
@@ -35,7 +36,6 @@
           @click="router.push('/addresses')"
         />
 
-
         <AccountCard
           v-if="isSeller"
           title="My Listings"
@@ -54,7 +54,11 @@
           v-if="isAdmin"
           title="Create User"
           subtitle="Create new accounts"
-          @click="() => {router.push('/admin/create-user') }"
+          @click="
+            () => {
+              router.push('/admin/create-user')
+            }
+          "
         />
         <AccountCard
           v-if="isAdmin"
@@ -68,37 +72,36 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { getMe } from "@/services/auth";
-import AccountCard from "@/components/AccountCard.vue";
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { getMe } from '@/services/auth'
+import AccountCard from '@/components/AccountCard.vue'
 
-const router = useRouter();
+const router = useRouter()
 
-const loading = ref(true);
-const error = ref("");
-const me = ref(null);
+const loading = ref(true)
+const error = ref('')
+const me = ref(null)
 
-const isAdmin = computed(() => me.value?.role === "admin");
-const isSellerOrAdmin = computed(() => ["seller", "admin"].includes(me.value?.role));
-const isSeller = computed(() => me.value?.role == "seller")
+const isAdmin = computed(() => me.value?.role === 'admin')
+const isSellerOrAdmin = computed(() => ['seller', 'admin'].includes(me.value?.role))
+const isSeller = computed(() => me.value?.role == 'seller')
 
 onMounted(async () => {
   try {
-    me.value = await getMe();
+    me.value = await getMe()
   } catch (e) {
-    error.value = e?.message || "Failed to load user";
-    router.push("/");
+    error.value = e?.message || 'Failed to load user'
+    router.push('/')
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+})
 </script>
 
 <style>
 .page {
   padding: 25px;
-
 }
 
 .grid {
@@ -106,8 +109,9 @@ onMounted(async () => {
   grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 16px;
 }
-.error { margin-top: 10px; }
-
+.error {
+  margin-top: 10px;
+}
 
 @media (max-width: 900px) {
   .grid {
@@ -121,6 +125,4 @@ onMounted(async () => {
     grid-template-columns: repeat(1, minmax(220px, 1fr));
   }
 }
-
 </style>
-

@@ -1,14 +1,14 @@
-:root{
+:root {
   --bg: #ffe8f7;
-  --surface: #FFFFFF;
-  --border: #E5E7EB;
+  --surface: #ffffff;
+  --border: #e5e7eb;
   --text: #111827;
-  --muted: #6B7280;
+  --muted: #6b7280;
 
-  --primary: #2563EB;      /* blue */
-  --primary-hover: #1D4ED8;
-  --nav: #2f4068;          /* very dark */
-  --nav-text: #F9FAFB;
+  --primary: #2563eb; /* blue */
+  --primary-hover: #1d4ed8;
+  --nav: #2f4068; /* very dark */
+  --nav-text: #f9fafb;
 }
 
 body {

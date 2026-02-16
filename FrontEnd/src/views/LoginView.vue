@@ -1,67 +1,63 @@
 <template>
   <div class="container">
-
     <div class="infoCard">
       <h1>MonitorB2B</h1>
       <p>For bizzness by bizzness the best place to sell and buy monitor for bizznesses</p>
     </div>
 
-
     <div class="loginCard">
       <h1>Login</h1>
       <form @submit.prevent="onSubmit">
         <label class="inputField">
-          <input v-model.trim="form.username" type="text" placeholder="Username">
+          <input v-model.trim="form.username" type="text" placeholder="Username" />
         </label>
-        
+
         <label class="inputField">
-          <input v-model.trim="form.password" type="password" placeholder="Password">
+          <input v-model.trim="form.password" type="password" placeholder="Password" />
         </label>
 
         <button type="submit" :disabled="loading">
-          {{ loading ? "Logging in..." : "Log in" }}
+          {{ loading ? 'Logging in...' : 'Log in' }}
         </button>
         <p v-if="error" class="error">{{ error }}</p>
-      </form> 
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-import { reactive, ref } from "vue";
-import { login } from "@/services/auth";
+import { useRouter } from 'vue-router'
+import { reactive, ref } from 'vue'
+import { login } from '@/services/auth'
 
-const router = useRouter();
+const router = useRouter()
 
-const form = reactive({ username: "", password: "" });
-const loading = ref(false);
-const error = ref("");
+const form = reactive({ username: '', password: '' })
+const loading = ref(false)
+const error = ref('')
 
 async function onSubmit() {
-  error.value = "";
-  loading.value = true;
+  error.value = ''
+  loading.value = true
 
   try {
-    await login({ username: form.username, password: form.password });
-    router.push("/user");
+    await login({ username: form.username, password: form.password })
+    router.push('/user')
   } catch (e) {
-    error.value = e?.message || "Login failed";
+    error.value = e?.message || 'Login failed'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 </script>
 
 <style>
-
-.container{
+.container {
   display: flex;
   justify-content: center;
   gap: 25px;
   padding: 25px 25px;
 }
-
 
 .infoCard,
 .loginCard {
@@ -71,7 +67,6 @@ async function onSubmit() {
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
-
 }
 
 button {
@@ -90,7 +85,7 @@ button {
   margin: 20px 0px;
 }
 
-input{
+input {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -100,5 +95,4 @@ input{
   border: 1px solid #bbb;
   border-radius: px;
 }
-
 </style>

@@ -9,8 +9,8 @@
 defineProps({
   title: String,
   subtitle: String,
-});
-const emit = defineEmits(["click"]);
+})
+const emit = defineEmits(['click'])
 </script>
 
 <style scoped>
@@ -20,13 +20,16 @@ const emit = defineEmits(["click"]);
   padding: 16px;
   background: var(--surface);
 }
-.cardTitle { margin: 0 0 6px;}
-.cardSub { margin: 0; opacity: 1.0; }
+.cardTitle {
+  margin: 0 0 6px;
+}
+.cardSub {
+  margin: 0;
+  opacity: 1;
+}
 
-.card:hover{
+.card:hover {
   border-color: var(--primary-hover);
   cursor: pointer;
 }
 </style>
-
-

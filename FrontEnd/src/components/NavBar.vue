@@ -25,7 +25,7 @@
 .brand {
   font-weight: 700;
   font-size: 18px;
-  color: var(--nav-text)
+  color: var(--nav-text);
 }
 
 .right {
@@ -43,5 +43,4 @@
 .link:hover {
   text-decoration: underline;
 }
-
 </style>
