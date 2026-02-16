@@ -4,4 +4,5 @@ const (
 	Userkey = "user"
 	Secret  = "secret"
 	Role    = "role"
+	UserID  = "userID"
 )
