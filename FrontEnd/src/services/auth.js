@@ -87,6 +87,20 @@ export async function addToBasket(productId, quantity) {
   return res.ok
 }
 
+export async function getBasket() {
+  const res = await fetch(`${BASE_URL}/private/basket`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'get basket failed')
+  }
+
+  return await res.json()
+}
+
 export async function getOrders() {
   const res = await fetch(`${BASE_URL}/private/orders`, {
     method: 'GET',

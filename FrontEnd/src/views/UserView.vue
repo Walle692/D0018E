@@ -20,6 +20,13 @@
 
         <AccountCard
           v-show="!isSellerOrAdmin"
+          title="My Basket"
+          subtitle="View and manage your shopping cart"
+          @click="router.push('/basket')"
+        />
+
+        <AccountCard
+          v-show="!isSellerOrAdmin"
           title="Your Orders"
           subtitle="Track, return or buy again"
           @click="router.push('/orders')"
