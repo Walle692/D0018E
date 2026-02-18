@@ -75,3 +75,5 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 
 	return orderID, nil
 }
+
+//TODO DELETE BASKET ITEMS
