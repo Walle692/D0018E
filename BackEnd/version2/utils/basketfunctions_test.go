@@ -18,11 +18,10 @@ func TestBasketToOrder(t *testing.T) {
 
 	sellerID := test_setup.SeedUser(t, ctx, pool, "seller_"+Suffix(), "seller")
 	p1qty, p2qty := 100, 200
-	p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, p1qty)
-	p2 := test_setup.SeedProduct(t, ctx, pool, sellerID, 200, p2qty)
 
 	t.Run("Out of stock case", func(t *testing.T) {
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
+		p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, p1qty)
 		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
 		price, qty := 100.0, p1qty+1
 		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty, price)
@@ -42,6 +41,7 @@ func TestBasketToOrder(t *testing.T) {
 	})
 	t.Run("1 basket item", func(t *testing.T) {
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
+		p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, p1qty)
 		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
 		price, qty := 100.0, 10
 		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty, price)
@@ -73,8 +73,11 @@ func TestBasketToOrder(t *testing.T) {
 	})
 
 	t.Run("2 basket item", func(t *testing.T) {
+		p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, p1qty)
+		p2 := test_setup.SeedProduct(t, ctx, pool, sellerID, 200, p2qty)
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
+
 		price_1, qty_1 := 100.0, 10
 		basketItemID_1 := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty_1, price_1)
 

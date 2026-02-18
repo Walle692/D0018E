@@ -43,6 +43,25 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 		return 0, fmt.Errorf("basket is empty")
 	}
 
+	// Perhaps return all products that doesn't have sufficient stock to better handle
+	// there error when stock is not enough. But for now just abort and return error
+	var errNoStock int
+	if err = tx.QueryRow(ctx, `
+		WITH cte AS (
+			UPDATE myschema.products p
+			SET stock = stock - bi.quantity
+			FROM myschema.basketitem bi
+			WHERE bi.basket_id = $1 AND p.product_id = bi.product_id
+			RETURNING p.product_id, p.stock
+		)
+		SELECT product_id FROM cte WHERE stock < 0
+		LIMIT 1
+		`, basketID,
+	).Scan(&errNoStock); err == nil {
+		return 0, fmt.Errorf("insufficient stock product id %d", errNoStock)
+	}
+	err = nil
+
 	// Build order
 	if err = tx.QueryRow(ctx,
 		`
