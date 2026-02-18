@@ -94,3 +94,42 @@ func SeedOrderItem(t *testing.T, ctx context.Context, pool *pgxpool.Pool, orderI
 
 	return orderItemID
 }
+
+func SeedBasket(t *testing.T, ctx context.Context, pool *pgxpool.Pool, buyerID int) (basketID int) {
+	t.Helper()
+
+	basketQuery := `--sql
+		INSERT INTO myschema.basket (basket_user_id)
+		VALUES ($1)
+		RETURNING basket_id
+	`
+	err := pool.QueryRow(ctx, basketQuery, buyerID).Scan(&basketID)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		if _, e := pool.Exec(ctx, `DELETE FROM myschema.basket WHERE basket_id=$1`, basketID); e != nil {
+			t.Logf("clean up basket: %v", e)
+		}
+	})
+	return basketID
+}
+
+func SeedBasketItem(t *testing.T, ctx context.Context, pool *pgxpool.Pool, basketID int, productID int, quantity int, price float64) (basketItemID int) {
+	t.Helper()
+
+	basketItemQuery := `--sql
+		INSERT INTO myschema.basketitem (basket_id, product_id, quantity, price)
+		VALUES ($1, $2, $3, $4)
+		RETURNING basket_item_id
+	`
+	err := pool.QueryRow(ctx, basketItemQuery, basketID, productID, quantity, price).Scan(&basketItemID)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		if _, e := pool.Exec(ctx, `DELETE FROM myschema.basketitem WHERE basket_item_id=$1`, basketItemID); e != nil {
+			t.Logf("clean up basket item: %v", e)
+		}
+	})
+
+	return basketItemID
+}
