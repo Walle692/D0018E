@@ -1,6 +1,77 @@
 package utils
 
-func ConvertBasketToOrder(basketID int) (int, error) {
+import (
+	"context"
+	"fmt"
 
-	return 0, nil
+	"github.com/walle692/D0018E/BackEnd/version2/global"
+)
+
+/*
+Currently takes basketID for consistency among how other basket function are written can easily be
+rewritten to take buyerID so we don't have to reverse the search done in getuserbasketid
+*/
+func ConvertBasketToOrder(basketID int) (orderID int, err error) {
+	ctx := context.Background()
+	pool := global.Get().Pool()
+
+	tx, err := pool.Begin(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback(ctx)
+		} else {
+			err = tx.Commit(ctx)
+		}
+	}()
+
+	// Get buyer ID (replace with get basket id if rewrite function input to buyerID)
+	var buyerID int
+	if err = tx.QueryRow(ctx, `SELECT basket_user_id FROM myschema.basket WHERE basket_id=$1`, basketID).Scan(&buyerID); err != nil {
+		return 0, fmt.Errorf("basket not found: %w", err)
+	}
+
+	// Prepare total price from basket items
+	var total float64
+	if err = tx.QueryRow(ctx, `SELECT COALESCE(SUM(quantity * price), 0) FROM myschema.basketitem WHERE basket_id=$1`, basketID).Scan(&total); err != nil {
+		return 0, fmt.Errorf("calc total: %w", err)
+	}
+
+	if total == 0 {
+		return 0, fmt.Errorf("basket is empty")
+	}
+
+	// Build order
+	if err = tx.QueryRow(ctx,
+		`
+		INSERT INTO myschema.order (order_user_id, orderdate, totalprice)
+		VALUES ($1, NOW(), $2)
+		RETURNING order_id
+		`,
+		buyerID, total,
+	).Scan(&orderID); err != nil {
+		return 0, fmt.Errorf("insert order: %w", err)
+	}
+
+	// Convert basket items to order items
+	_, err = tx.Exec(ctx,
+		`
+		INSERT INTO myschema.orderitem (order_id, product_id, quantity, price)
+		SELECT $1, product_id, quantity, price
+		FROM myschema.basketitem
+		WHERE basket_id=$2
+		`,
+		orderID, basketID,
+	)
+	if err != nil {
+		return 0, fmt.Errorf("insert order items: %w", err)
+	}
+	_, err = tx.Exec(ctx, `DELETE FROM myschema.basketitem WHERE basket_id=$1`, basketID)
+	if err != nil {
+		return 0, fmt.Errorf("delete basket items: %w", err)
+	}
+
+	return orderID, nil
 }
