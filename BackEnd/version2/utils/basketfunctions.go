@@ -9,7 +9,7 @@ import (
 
 /*
 Currently takes basketID for consistency among how other basket function are written can easily be
-rewritten to take buyerID so we don't have to reverse the search done in getuserbasketid
+rewritten to take buyerID so we don't have to reverse the search done in getUserBasketID
 */
 func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 	ctx := context.Background()
@@ -35,12 +35,23 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 
 	// Prepare total price from basket items
 	var total float64
-	if err = tx.QueryRow(ctx, `SELECT COALESCE(SUM(quantity * price), 0) FROM myschema.basketitem WHERE basket_id=$1`, basketID).Scan(&total); err != nil {
+	var hasInActive bool
+	if err = tx.QueryRow(ctx,
+		`
+		SELECT COALESCE(SUM(bi.quantity * p.price), 0), BOOL_OR(p.active = false)
+		FROM myschema.basketitem bi
+		JOIN myschema.products p ON p.product_id = bi.product_id
+		WHERE basket_id=$1
+		`, basketID,
+	).Scan(&total, &hasInActive); err != nil {
 		return 0, fmt.Errorf("calc total: %w", err)
 	}
 
 	if total == 0 {
 		return 0, fmt.Errorf("basket is empty")
+	}
+	if hasInActive {
+		return 0, fmt.Errorf("product not available")
 	}
 
 	// Perhaps return all products that doesn't have sufficient stock to better handle
@@ -78,8 +89,9 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 	_, err = tx.Exec(ctx,
 		`
 		INSERT INTO myschema.orderitem (order_id, product_id, quantity, price)
-		SELECT $1, product_id, quantity, price
-		FROM myschema.basketitem
+		SELECT $1, bi.product_id, bi.quantity, p.price
+		FROM myschema.basketitem bi
+		JOIN myschema.products p ON p.product_id = bi.product_id 
 		WHERE basket_id=$2
 		`,
 		orderID, basketID,

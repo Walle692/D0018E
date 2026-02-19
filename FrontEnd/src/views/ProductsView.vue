@@ -41,7 +41,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getProducts } from '@/services/auth'
+import { getProducts } from '@/services/products'
 
 const router = useRouter()
 

@@ -1,8 +1,10 @@
 package utils_test
 
 import (
+	"context"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/require"
 	"github.com/walle692/D0018E/BackEnd/version2/test_setup"
 	"github.com/walle692/D0018E/BackEnd/version2/utils"
@@ -37,6 +39,7 @@ func TestBasketToOrder(t *testing.T) {
 		//Check that product stock is unchanged
 		pool.QueryRow(ctx, `SELECT stock FROM myschema.products WHERE product_id=$1`, p1).Scan(&count)
 		require.Equal(t, p1qty, count)
+		t.Cleanup(func() { deleteNewOrder(t, ctx, pool, orderID) })
 
 	})
 	t.Run("1 basket item", func(t *testing.T) {
@@ -70,12 +73,7 @@ func TestBasketToOrder(t *testing.T) {
 		pool.QueryRow(ctx, `SELECT stock FROM myschema.products WHERE product_id=$1`, p1).Scan(&count)
 		require.Equal(t, p1qty-qty, count)
 
-		t.Cleanup(func() {
-			_, err = pool.Exec(ctx, `DELETE FROM myschema.orderitem WHERE order_id=$1`, orderID)
-			require.NoError(t, err)
-			_, err = pool.Exec(ctx, `DELETE FROM myschema.order WHERE order_id=$1`, orderID)
-			require.NoError(t, err)
-		})
+		t.Cleanup(func() { deleteNewOrder(t, ctx, pool, orderID) })
 
 	})
 
@@ -119,12 +117,32 @@ func TestBasketToOrder(t *testing.T) {
 		pool.QueryRow(ctx, `SELECT stock FROM myschema.products WHERE product_id=$1`, p2).Scan(&count)
 		require.Equal(t, p2qty-qty_2, count)
 
-		t.Cleanup(func() {
-			_, err = pool.Exec(ctx, `DELETE FROM myschema.orderitem WHERE order_id=$1`, orderID)
-			require.NoError(t, err)
-			_, err = pool.Exec(ctx, `DELETE FROM myschema.order WHERE order_id=$1`, orderID)
-			require.NoError(t, err)
-		})
+		t.Cleanup(func() { deleteNewOrder(t, ctx, pool, orderID) })
 	})
 
+	t.Run("Product no longer active", func(t *testing.T) {
+		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
+		p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, p1qty)
+		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
+		qty := 10
+		_ = test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty)
+
+		pool.Exec(ctx, `UPDATE myschema.products SET active = FALSE WHERE product_id=$1`, p1)
+
+		orderID, err := utils.ConvertBasketToOrder(basketID)
+		require.Error(t, err)
+		t.Cleanup(func() { deleteNewOrder(t, ctx, pool, orderID) })
+
+	})
+
+}
+
+func deleteNewOrder(t *testing.T, ctx context.Context, pool *pgxpool.Pool, orderID int) {
+	if _, err := pool.Exec(ctx, `DELETE FROM myschema.orderitem WHERE order_id=$1`, orderID); err != nil {
+		t.Logf("clean up order item: %v", err)
+	}
+	if _, err := pool.Exec(ctx, `DELETE FROM myschema.order WHERE order_id=$1`, orderID); err != nil {
+
+		t.Logf("clean up order: %v", err)
+	}
 }
