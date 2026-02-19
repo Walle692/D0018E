@@ -25,7 +25,7 @@ func CreateBasketItem(c *gin.Context, basketID int, productID int, quantity int)
 	*/
 
 	// insert the basketitem into the db
-	query := "INSERT INTO myschema.basketitem (basket_id, product_id, quantity) VALUES ($1, $2, $3, $4)"
+	query := "INSERT INTO myschema.basketitem (basket_id, product_id, quantity) VALUES ($1, $2, $3)"
 	_, err := postgres.Pool().Exec(ctx, query, basketID, productID, quantity)
 	if err != nil {
 		fmt.Println("DEBUG: CREATE BASKET ITEM INSERT ERROR")
