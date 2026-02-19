@@ -17,12 +17,18 @@ func Test_CreateUser_InsertsRow(t *testing.T) {
 	require.NoError(t, err)
 
 	var gotRole string
-	err = pool.QueryRow(ctx, `SELECT role FROM myschema.users WHERE username=$1`, username).Scan(&gotRole)
+	var gotUserID int
+	err = pool.QueryRow(ctx, `SELECT role, user_id FROM myschema.users WHERE username=$1`, username).Scan(&gotRole, &gotUserID)
 	require.NoError(t, err)
 	require.Equal(t, role, gotRole)
 
 	t.Cleanup(func() {
+		if _, e := pool.Exec(ctx, `DELETE FROM myschema.basket WHERE basket_user_id=$1`, gotUserID); e != nil {
+			require.NoError(t, e)
+			t.Logf("clean up user: %v", e)
+		}
 		if _, e := pool.Exec(ctx, `DELETE FROM myschema.users WHERE username=$1`, username); e != nil {
+			require.NoError(t, e)
 			t.Logf("clean up user: %v", e)
 		}
 	})
