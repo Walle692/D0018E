@@ -62,7 +62,7 @@ INSERT INTO myschema.basket (basket_user_id)
 VALUES ((SELECT user_id FROM myschema.users WHERE username='buyer'));
 
 -- Add items to basket
-INSERT INTO myschema.basketitem (basket_id, product_id, quantity, price)
+INSERT INTO myschema.basketitem (basket_id, product_id, quantity)
 VALUES
 (
   (SELECT basket_id FROM myschema.basket b
