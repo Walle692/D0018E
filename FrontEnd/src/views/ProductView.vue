@@ -38,8 +38,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getProductById, addToBasket as addToBasketApi } from '@/services/auth'
-
+import { getProductById } from '@/services/products'
+import { addToBasket as addToBasketApi } from '@/services/basket'
 const router = useRouter()
 
 const product = ref(null)

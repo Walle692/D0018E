@@ -50,7 +50,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getBasket } from '@/services/auth'
+import { getBasket } from '@/services/basket'
 
 const router = useRouter()
 
