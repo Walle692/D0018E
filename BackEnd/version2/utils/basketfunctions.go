@@ -35,18 +35,23 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 
 	// Prepare total price from basket items
 	var total float64
+	var hasInActive bool
 	if err = tx.QueryRow(ctx,
 		`
-		SELECT COALESCE(SUM(bi.quantity * p.price), 0) 
+		SELECT COALESCE(SUM(bi.quantity * p.price), 0), BOOL_OR(p.active = false)
 		FROM myschema.basketitem bi
 		JOIN myschema.products p ON p.product_id = bi.product_id
 		WHERE basket_id=$1
-		`, basketID).Scan(&total); err != nil {
+		`, basketID,
+	).Scan(&total, &hasInActive); err != nil {
 		return 0, fmt.Errorf("calc total: %w", err)
 	}
 
 	if total == 0 {
 		return 0, fmt.Errorf("basket is empty")
+	}
+	if hasInActive {
+		return 0, fmt.Errorf("product not available")
 	}
 
 	// Perhaps return all products that doesn't have sufficient stock to better handle
