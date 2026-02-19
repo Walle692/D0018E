@@ -71,8 +71,7 @@ VALUES
    ORDER BY b.basket_id DESC
    LIMIT 1),
   (SELECT product_id FROM myschema.products WHERE product_name='UltraView 24"'),
-  1,
-  (SELECT price FROM myschema.products WHERE product_name='UltraView 24"')
+  1
 ),
 (
   (SELECT basket_id FROM myschema.basket b
@@ -81,8 +80,7 @@ VALUES
    ORDER BY b.basket_id DESC
    LIMIT 1),
   (SELECT product_id FROM myschema.products WHERE product_name='Office 22"'),
-  2,
-  (SELECT price FROM myschema.products WHERE product_name='Office 22"')
+  2
 );
 
 -- -------------------------------------------------------------------
