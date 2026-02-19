@@ -16,11 +16,11 @@ Test that function correctly returns none, one, and two orders
 func TestRootOrders(t *testing.T) {
 	ctx, pool := test_setup.SetUpDB(t)
 
-	sellerID := test_setup.SeedUser(t, ctx, pool, "seller_"+suffix(), "seller")
+	sellerID := test_setup.SeedUser(t, ctx, pool, "seller_"+Suffix(), "seller")
 	productID := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, 10)
 
 	t.Run("no orders", func(t *testing.T) {
-		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+suffix(), "buyer")
+		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		out, err := utils.GetUserOrders(buyerID)
 		require.NoError(t, err)
 		require.Empty(t, out)
@@ -28,7 +28,7 @@ func TestRootOrders(t *testing.T) {
 
 	t.Run("one order", func(t *testing.T) {
 		totalPrice := 100.0
-		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+suffix(), "buyer")
+		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, totalPrice)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, productID, 1, 1)
 
@@ -42,7 +42,7 @@ func TestRootOrders(t *testing.T) {
 
 	t.Run("two orders", func(t *testing.T) {
 		totalPrice_1, totalPrice_2 := 100.0, 200.0
-		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+suffix(), "buyer")
+		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		order1ID := test_setup.SeedOrder(t, ctx, pool, buyerID, totalPrice_1)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, order1ID, productID, 1, 1)
 		order2ID := test_setup.SeedOrder(t, ctx, pool, buyerID, totalPrice_2)
@@ -68,13 +68,13 @@ Test that a order correctly contains product and quantity, checks 1 and 2 produc
 func TestOrderItems(t *testing.T) {
 	ctx, pool := test_setup.SetUpDB(t)
 
-	sellerID := test_setup.SeedUser(t, ctx, pool, "seller_"+suffix(), "seller")
+	sellerID := test_setup.SeedUser(t, ctx, pool, "seller_"+Suffix(), "seller")
 	// create 2 products you can reuse
 	p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, 10)
 	p2 := test_setup.SeedProduct(t, ctx, pool, sellerID, 200, 10)
 
 	t.Run("1 order item", func(t *testing.T) {
-		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+suffix(), "buyer")
+		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, 1)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p1, 100, 100)
 
@@ -84,7 +84,7 @@ func TestOrderItems(t *testing.T) {
 		require.Len(t, out[0].Order_items, 1)
 	})
 	t.Run("2 order item", func(t *testing.T) {
-		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+suffix(), "buyer")
+		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, 1)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p1, 100, 100)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p2, 200, 200)
@@ -104,6 +104,6 @@ func TestOrderItems(t *testing.T) {
 	})
 }
 
-func suffix() string {
+func Suffix() string {
 	return fmt.Sprint(time.Now().UnixNano())
 }
