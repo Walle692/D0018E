@@ -70,6 +70,13 @@ func TestBasketToOrder(t *testing.T) {
 		pool.QueryRow(ctx, `SELECT stock FROM myschema.products WHERE product_id=$1`, p1).Scan(&count)
 		require.Equal(t, p1qty-qty, count)
 
+		t.Cleanup(func() {
+			_, err = pool.Exec(ctx, `DELETE FROM myschema.orderitem WHERE order_id=$1`, orderID)
+			require.NoError(t, err)
+			_, err = pool.Exec(ctx, `DELETE FROM myschema.order WHERE order_id=$1`, orderID)
+			require.NoError(t, err)
+		})
+
 	})
 
 	t.Run("2 basket item", func(t *testing.T) {
@@ -112,6 +119,12 @@ func TestBasketToOrder(t *testing.T) {
 		pool.QueryRow(ctx, `SELECT stock FROM myschema.products WHERE product_id=$1`, p2).Scan(&count)
 		require.Equal(t, p2qty-qty_2, count)
 
+		t.Cleanup(func() {
+			_, err = pool.Exec(ctx, `DELETE FROM myschema.orderitem WHERE order_id=$1`, orderID)
+			require.NoError(t, err)
+			_, err = pool.Exec(ctx, `DELETE FROM myschema.order WHERE order_id=$1`, orderID)
+			require.NoError(t, err)
+		})
 	})
 
 }
