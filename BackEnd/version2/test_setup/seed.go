@@ -36,15 +36,15 @@ func SeedProduct(t *testing.T, ctx context.Context, pool *pgxpool.Pool, sellerID
 	n := time.Now().UnixNano()
 	suffix := strconv.FormatInt(n, 10)
 
-	Name, Manufacturer, Description, Screen_Size, Picture_url, Sku :=
-		"Name_"+suffix, "Manufacturer_"+suffix, "Description_"+suffix, int(n), "Picture_url_"+suffix, "Sku_"+suffix
+	Name, Manufacturer, Description, Screen_Size, Picture_url :=
+		"Name_"+suffix, "Manufacturer_"+suffix, "Description_"+suffix, int(n), "Picture_url_"+suffix
 
 	prodQuery := `--sql
-		INSERT INTO myschema.products (product_name, manufacturer ,seller_user_id, description, screen_size ,picture_url, sku, price, stock)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		INSERT INTO myschema.products (product_name, manufacturer ,seller_user_id, description, screen_size ,picture_url, price, stock)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING product_id
 	`
-	err := pool.QueryRow(ctx, prodQuery, Name, Manufacturer, sellerID, Description, Screen_Size, Picture_url, Sku, price, stock).Scan(&productID)
+	err := pool.QueryRow(ctx, prodQuery, Name, Manufacturer, sellerID, Description, Screen_Size, Picture_url, price, stock).Scan(&productID)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
@@ -114,15 +114,15 @@ func SeedBasket(t *testing.T, ctx context.Context, pool *pgxpool.Pool, buyerID i
 	return basketID
 }
 
-func SeedBasketItem(t *testing.T, ctx context.Context, pool *pgxpool.Pool, basketID int, productID int, quantity int, price float64) (basketItemID int) {
+func SeedBasketItem(t *testing.T, ctx context.Context, pool *pgxpool.Pool, basketID int, productID int, quantity int) (basketItemID int) {
 	t.Helper()
 
 	basketItemQuery := `--sql
-		INSERT INTO myschema.basketitem (basket_id, product_id, quantity, price)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO myschema.basketitem (basket_id, product_id, quantity)
+		VALUES ($1, $2, $3)
 		RETURNING basket_item_id
 	`
-	err := pool.QueryRow(ctx, basketItemQuery, basketID, productID, quantity, price).Scan(&basketItemID)
+	err := pool.QueryRow(ctx, basketItemQuery, basketID, productID, quantity).Scan(&basketItemID)
 	require.NoError(t, err)
 
 	t.Cleanup(func() {

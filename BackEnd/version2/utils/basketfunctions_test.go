@@ -23,8 +23,8 @@ func TestBasketToOrder(t *testing.T) {
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, p1qty)
 		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
-		price, qty := 100.0, p1qty+1
-		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty, price)
+		qty := p1qty + 1
+		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty)
 
 		orderID, err := utils.ConvertBasketToOrder(basketID)
 		require.Error(t, err)
@@ -44,7 +44,7 @@ func TestBasketToOrder(t *testing.T) {
 		p1 := test_setup.SeedProduct(t, ctx, pool, sellerID, 100, p1qty)
 		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
 		price, qty := 100.0, 10
-		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty, price)
+		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty)
 
 		orderID, err := utils.ConvertBasketToOrder(basketID)
 		require.NoError(t, err)
@@ -86,10 +86,10 @@ func TestBasketToOrder(t *testing.T) {
 		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
 
 		price_1, qty_1 := 100.0, 10
-		basketItemID_1 := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty_1, price_1)
+		basketItemID_1 := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty_1)
 
 		price_2, qty_2 := 200.0, 20
-		basketItemID_2 := test_setup.SeedBasketItem(t, ctx, pool, basketID, p2, qty_2, price_2)
+		basketItemID_2 := test_setup.SeedBasketItem(t, ctx, pool, basketID, p2, qty_2)
 
 		orderID, err := utils.ConvertBasketToOrder(basketID)
 		require.NoError(t, err)
