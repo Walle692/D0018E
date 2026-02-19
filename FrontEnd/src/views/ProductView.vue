@@ -26,7 +26,10 @@
         <p class="description">{{ product.description || 'No description available.' }}</p>
       </div>
 
-      <button type="button" @click="addToBasket(product.product_id, 1)">Add to 1 to basket</button>
+      <input type="number" v-model="quantity" min="1" />
+      <button type="button" @click="addToBasket(product.product_id, quantity)">
+        Add to basket
+      </button>
     </div>
 
     <button class="linkBtn" type="button" @click="router.push('/products')">

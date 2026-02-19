@@ -1,119 +1,170 @@
 <template>
   <div class="page">
-    <div class="header">
+    <div>
       <h1>Your basket</h1>
-      <p class="subtitle">Items in your shopping cart</p>
-    </div>
+      <p>Items in your shopping cart</p>
 
-    <div v-if="loading" class="state">Loading basket...</div>
-    <div v-else-if="error" class="state error">{{ error }}</div>
+      <p v-if="loading">Loading basket...</p>
+      <p v-else-if="error">{{ error }}</p>
 
-    <div v-else>
-      <div v-if="items.length === 0" class="state">Your basket is empty.</div>
-      <div v-else class="basket-list">
-        <div v-for="(item, idx) in items" :key="itemKey(item, idx)" class="basket-item">
-          <div class="image-wrap">
-            <img
-              v-if="itemImage(item)"
-              :src="itemImage(item)"
-              :alt="itemName(item)"
-              loading="lazy"
-            />
-            <div v-else class="image-fallback">No image</div>
+      <template v-else>
+        <p v-if="items.length === 0">Your basket is empty.</p>
+
+        <div v-else class="layout">
+          <div class="layout__basket">
+            <div v-for="it in items" :key="it.product_id" class="item_container">
+              <img
+                class="item_container__img"
+                :src="it.picture_url || placeholder"
+                alt=""
+                @error="onImgError"
+              />
+              <div class="item_container__data">
+                <router-link class="item_container__name" :to="`/products/${it.product_id}`">
+                  {{ it.product_name }}
+                </router-link>
+                <div class="item_container__manufacturer">{{ it.manufacturer }}</div>
+                <div>
+                  Qty: <b>{{ it.quantity }}</b>
+                  <span :class="it.available ? 'ok' : 'bad'">
+                    {{ it.available ? 'Available' : 'Unavailable' }}
+                  </span>
+                </div>
+                <div>
+                  Unit: <b>{{ money(it.price) }}</b>
+                </div>
+                <div>
+                  Total: <b>{{ money(it.price * it.quantity) }}</b>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="details">
-            <div class="name">{{ itemName(item) }}</div>
-            <div class="meta">{{ itemManufacturer(item) }}</div>
-            <div class="qty">Qty: {{ item.quantity ?? 0 }}</div>
-          </div>
-
-          <div class="price">
-            <div class="unit">Unit: {{ formatPrice(itemPrice(item)) }}</div>
-            <div class="total">Total: {{ formatPrice(itemTotal(item)) }}</div>
+          <div>
+            <div>Subtotal</div>
+            <div>
+              <b>{{ money(totalprice) }}</b>
+            </div>
+            <div>
+              <button @click="router.push('/products')">← Back</button>
+              <button @click="doCheckout" :disabled="items.length === 0">Checkout</button>
+            </div>
           </div>
         </div>
-
-        <div class="basket-summary">
-          <div class="summary-label">Subtotal</div>
-          <div class="summary-value">{{ formatPrice(subtotal) }}</div>
-        </div>
-      </div>
+      </template>
     </div>
-
-    <button class="linkBtn" type="button" @click="router.push('/products')">
-      <- Back to products
-    </button>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { getBasket } from '@/services/basket'
+import { getBasket, checkoutBasket } from '@/services/basket'
 
 const router = useRouter()
 
-const items = ref([])
 const loading = ref(true)
 const error = ref('')
 
-function normalizeItems(payload) {
-  if (Array.isArray(payload)) return payload
-  if (Array.isArray(payload?.items)) return payload.items
-  if (Array.isArray(payload?.basket_items)) return payload.basket_items
-  if (Array.isArray(payload?.data)) return payload.data
-  return []
+const basket = ref({ totalprice: 0, basket_items: [] })
+
+const items = computed(() =>
+  Array.isArray(basket.value?.basket_items) ? basket.value.basket_items : [],
+)
+
+const totalprice = computed(() => Number(basket.value?.totalprice ?? 0))
+
+import placeholderImg from '@/assets/placeholder.webp'
+
+const onImgError = (e) => {
+  e.target.src = placeholderImg
 }
 
-function itemName(item) {
-  return item?.product?.product_name || item?.product_name || 'Unnamed product'
-}
-
-function itemManufacturer(item) {
-  return item?.product?.manufacturer || item?.manufacturer || ''
-}
-
-function itemImage(item) {
-  return item?.product?.picture_url || item?.picture_url || ''
-}
-
-function itemPrice(item) {
-  const price = item?.price ?? item?.product?.price ?? 0
-  const num = Number(price)
-  return Number.isFinite(num) ? num : 0
-}
-
-function itemTotal(item) {
-  const qty = Number(item?.quantity ?? 0)
-  return itemPrice(item) * (Number.isFinite(qty) ? qty : 0)
-}
-
-function itemKey(item, idx) {
-  return item?.basket_item_id ?? item?.product?.product_id ?? item?.product_id ?? idx
-}
-
-const subtotal = computed(() => items.value.reduce((sum, item) => sum + itemTotal(item), 0))
-
-function formatPrice(value) {
-  const num = Number(value)
-  return Number.isFinite(num) ? num.toFixed(2) : '0.00'
+function money(x) {
+  const n = Number(x)
+  return Number.isNaN(n) ? '-' : n.toFixed(2)
 }
 
 async function fetchBasket() {
   loading.value = true
   error.value = ''
-  items.value = []
-
   try {
     const data = await getBasket()
-    items.value = normalizeItems(data)
+
+    basket.value = data && typeof data === 'object' ? data : { totalprice: 0, basket_items: [] }
   } catch (e) {
     error.value = e?.message || 'Failed to load basket'
+    basket.value = { totalprice: 0, basket_items: [] }
   } finally {
     loading.value = false
   }
 }
 
+async function doCheckout() {
+  error.value = ''
+  try {
+    await checkoutBasket() // POST /private/checkout
+    await fetchBasket() // refresh basket (should be empty)
+    router.push('/orders') // go to orders view
+  } catch (e) {
+    error.value = e?.message || 'Checkout failed'
+  }
+}
+
 onMounted(fetchBasket)
 </script>
+
+<style>
+.layout {
+  display: grid;
+  grid-template-areas: 'basket checkout';
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.layout__basket {
+  grid-area: basket;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  background-color: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+
+.layout__checkout {
+  grid-area: checkout;
+}
+
+.item_container {
+  display: grid;
+  grid-template-areas: 'img data';
+  grid-template-columns: 128px 1fr;
+  gap: 20px;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid grey;
+  padding: 20px;
+}
+
+.item_container__img {
+  grid-area: img;
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.item_container__data {
+  grid-area: data;
+  display: flex;
+  flex-direction: column;
+}
+
+.item_container__name {
+  font-weight: bold;
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: inherit;
+}
+</style>

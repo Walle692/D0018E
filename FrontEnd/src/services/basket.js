@@ -24,3 +24,17 @@ export async function getBasket() {
 
   return await res.json()
 }
+
+export async function checkoutBasket() {
+  const res = await fetch(`${BASE_URL}/private/checkout`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'checkout failed')
+  }
+
+  return await res.json().catch(() => ({}))
+}
