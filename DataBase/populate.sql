@@ -36,23 +36,23 @@ DELETE FROM myschema.products;
 -- -------------------------------------------------------------------
 -- 3) Insert products for the seller user
 INSERT INTO myschema.products
-(product_name, manufacturer, seller_user_id, description, screen_size, picture_url, sku, price, stock)
+(product_name, manufacturer, seller_user_id, description, screen_size, picture_url, price, stock)
 VALUES
 ('UltraView 24"', 'Acme',
  (SELECT user_id FROM myschema.users WHERE username='seller'),
- '24-inch IPS monitor', 24.0, 'https://example.com/monitor1.jpg', 'SKU-ACME-24', 149.99, 200),
+ '24-inch IPS monitor', 24.0, 'https://example.com/monitor1.jpg', 149.99, 200),
 
 ('UltraView 27"', 'Acme',
  (SELECT user_id FROM myschema.users WHERE username='seller'),
- '27-inch QHD monitor', 27.0, 'https://example.com/monitor2.jpg', 'SKU-ACME-27', 249.99, 150),
+ '27-inch QHD monitor', 27.0, 'https://example.com/monitor2.jpg', 249.99, 150),
 
 ('ProScreen 32"', 'ViewBest',
  (SELECT user_id FROM myschema.users WHERE username='seller'),
- '32-inch 4K monitor', 32.0, 'https://example.com/monitor3.jpg', 'SKU-VB-32', 399.00, 100),
+ '32-inch 4K monitor', 32.0, 'https://example.com/monitor3.jpg', 399.00, 100),
 
 ('Office 22"', 'ViewBest',
  (SELECT user_id FROM myschema.users WHERE username='seller'),
- '22-inch budget monitor', 22.0, 'https://example.com/monitor4.jpg', 'SKU-VB-22', 99.00, 300);
+ '22-inch budget monitor', 22.0, 'https://example.com/monitor4.jpg', 99.00, 300);
 
 -- -------------------------------------------------------------------
 -- Baskets (optional sample)
