@@ -8,7 +8,7 @@ type ProductStruct struct {
 	Description    string  `json:"description"`
 	Screen_size    float32 `json:"screen_size"`
 	Picture_url    string  `json:"picture_url"`
-	Sku            string  `json:"sku"`
 	Price          float32 `json:"price"`
 	Stock          int     `json:"stock"`
+	Active         bool    `json:"active"`
 }

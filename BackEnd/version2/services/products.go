@@ -32,7 +32,7 @@ func GetProducts(c *gin.Context) {
 	// iterate trough all rows
 	for rows.Next() {
 		var p global.ProductStruct
-		if err := rows.Scan(&p.Product_id, &p.Product_name, &p.Manufacturer, &p.Seller_user_id, &p.Description, &p.Screen_size, &p.Picture_url, &p.Sku, &p.Price, &p.Stock); err != nil {
+		if err := rows.Scan(&p.Product_id, &p.Product_name, &p.Manufacturer, &p.Seller_user_id, &p.Description, &p.Screen_size, &p.Picture_url, &p.Price, &p.Stock, &p.Active); err != nil {
 			fmt.Println("DEBUG: PRODUCTS SCAN ERROR")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch products"})
 			return

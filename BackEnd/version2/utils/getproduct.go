@@ -36,7 +36,7 @@ func GetProduct(c *gin.Context) {
 	postgres := global.Get()
 
 	// query the database and scan the result into the struct
-	err = postgres.Pool().QueryRow(ctx, query, productID).Scan(&p.Product_id, &p.Product_name, &p.Manufacturer, &p.Seller_user_id, &p.Description, &p.Screen_size, &p.Picture_url, &p.Sku, &p.Price, &p.Stock)
+	err = postgres.Pool().QueryRow(ctx, query, productID).Scan(&p.Product_id, &p.Product_name, &p.Manufacturer, &p.Seller_user_id, &p.Description, &p.Screen_size, &p.Picture_url, &p.Price, &p.Stock, &p.Active)
 
 	if err == pgx.ErrNoRows {
 		fmt.Println("DEBUG: PRODUCT ERR NO ROWS")
