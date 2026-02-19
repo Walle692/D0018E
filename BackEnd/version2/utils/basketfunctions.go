@@ -9,7 +9,7 @@ import (
 
 /*
 Currently takes basketID for consistency among how other basket function are written can easily be
-rewritten to take buyerID so we don't have to reverse the search done in getuserbasketid
+rewritten to take buyerID so we don't have to reverse the search done in getUserBasketID
 */
 func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 	ctx := context.Background()
