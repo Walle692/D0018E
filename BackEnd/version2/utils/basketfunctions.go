@@ -35,7 +35,13 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 
 	// Prepare total price from basket items
 	var total float64
-	if err = tx.QueryRow(ctx, `SELECT COALESCE(SUM(quantity * price), 0) FROM myschema.basketitem WHERE basket_id=$1`, basketID).Scan(&total); err != nil {
+	if err = tx.QueryRow(ctx,
+		`
+		SELECT COALESCE(SUM(bi.quantity * p.price), 0) 
+		FROM myschema.basketitem bi
+		JOIN myschema.products p ON p.product_id = bi.product_id
+		WHERE basket_id=$1
+		`, basketID).Scan(&total); err != nil {
 		return 0, fmt.Errorf("calc total: %w", err)
 	}
 
@@ -78,8 +84,9 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 	_, err = tx.Exec(ctx,
 		`
 		INSERT INTO myschema.orderitem (order_id, product_id, quantity, price)
-		SELECT $1, product_id, quantity, price
-		FROM myschema.basketitem
+		SELECT $1, bi.product_id, bi.quantity, p.price
+		FROM myschema.basketitem bi
+		JOIN myschema.products p ON p.product_id = bi.product_id 
 		WHERE basket_id=$2
 		`,
 		orderID, basketID,
