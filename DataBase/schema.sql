@@ -1,12 +1,12 @@
 CREATE SCHEMA IF NOT EXISTS myschema;
 
-DROP TABLE IF EXISTS myschema.users;
-DROP TABLE IF EXISTS myschema.products;
-DROP TABLE IF EXISTS myschema.order;
-DROP TABLE IF EXISTS myschema.orderitem;
-DROP TABLE IF EXISTS myschema.basket;
-DROP TABLE IF EXISTS myschema.basketitem;
-DROP TABLE IF EXISTS myschema.rating;
+DROP TABLE IF EXISTS myschema.users CASCADE;
+DROP TABLE IF EXISTS myschema.products CASCADE;
+DROP TABLE IF EXISTS myschema.order CASCADE;
+DROP TABLE IF EXISTS myschema.orderitem CASCADE;
+DROP TABLE IF EXISTS myschema.basket CASCADE;
+DROP TABLE IF EXISTS myschema.basketitem CASCADE;
+DROP TABLE IF EXISTS myschema.rating CASCADE;
 
 CREATE TABLE IF NOT EXISTS myschema.users (
     user_id SERIAL PRIMARY KEY,
@@ -65,11 +65,11 @@ CREATE TABLE IF NOT EXISTS myschema.basketitem (
     FOREIGN KEY (product_id) REFERENCES myschema.products(product_id)
 );
 
-CREATE TABLE IF NOT EXITS myschema.rating (
+CREATE TABLE IF NOT EXISTS myschema.rating (
     comment_id SERIAL PRIMARY KEY,
     customer_user_id INT NOT NULL,
     product_id INT NOT NULL,
     comment VARCHAR DEFAULT '',
-    rating INT CHECK (rating >= 1 AND rating <= 3),
-)
+    rating INT CHECK (rating >= 1 AND rating <= 3)
+);
 
