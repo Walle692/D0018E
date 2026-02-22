@@ -1,19 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
 :root {
   --bg: #ffe8f7;
   --surface: #ffffff;
   --border: #e5e7eb;
-  --text: #111827;
+  --text: #303030;
   --muted: #6b7280;
 
   --primary: #2563eb; /* blue */
   --primary-hover: #1d4ed8;
-  --nav: #2f4068; /* very dark */
   --nav-text: #f9fafb;
+
+  --bg: #e5effb;
+  --color1: #3a587a;
+  --button: #1c507c;
+  --nav: #152539;
+  --shadow: #d5deea;
+  --hover: #ff9700;
+}
+
+* {
+  font-family: 'Outfit', sans-serif;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, Arial, sans-serif;
-  background: var(--bg);
   color: var(--text);
+
+  background-color: var(--bg);
+}
+
+button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--button);
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--hover);
+}
+
+input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #bbb;
+  border-radius: px;
+}
+
+input:focus {
+  outline-style: double;
+  outline-color: var(--hover);
 }

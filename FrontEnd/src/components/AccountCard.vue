@@ -29,7 +29,7 @@ const emit = defineEmits(['click'])
 }
 
 .card:hover {
-  border-color: var(--primary-hover);
+  border-color: var(--hover);
   cursor: pointer;
 }
 </style>

@@ -54,30 +54,26 @@ async function onSubmit() {
 <style>
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 25px;
-  padding: 25px 25px;
+  padding: 25px;
+  max-width: 400px;
+  margin: 0 auto;
 }
 
 .infoCard,
 .loginCard {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 400px;
+  color: var(--text);
   padding: 25px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
-}
-
-button {
-  width: 100%;
-  margin-top: 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--primary);
-  color: var(--text);
-  cursor: pointer;
+  box-shadow: 3px 3px var(--shadow);
 }
 
 .inputField {
@@ -85,14 +81,9 @@ button {
   margin: 20px 0px;
 }
 
-input {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 6px;
-  border-radius: 8px;
-  padding: 8px 10px;
-  border: 1px solid #bbb;
-  border-radius: px;
+@media (max-width: 375px) {
+  .container {
+    flex-direction: column;
+  }
 }
 </style>
