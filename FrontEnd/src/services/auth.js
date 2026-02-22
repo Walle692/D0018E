@@ -31,6 +31,18 @@ export async function getMe() {
   return await res.json()
 }
 
+export async function logout() {
+  const res = await fetch(`${BASE_URL}/logout`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'Logout failed')
+  }
+  return true
+}
+
 export async function createUser({ username, password, role }) {
   const res = await fetch(`${BASE_URL}/admin/create-user`, {
     method: 'POST',

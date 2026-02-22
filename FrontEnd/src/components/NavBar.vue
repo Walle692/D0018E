@@ -5,12 +5,45 @@
     </div>
 
     <div class="right">
-      <a href="#" class="link">My profile</a>
-      <a href="#" class="link">Settings</a>
-      <a href="#" class="link">About</a>
+      <RouterLink v-if="loggedIn" to="/user" class="link"> My profile </RouterLink>
+      <RouterLink to="/user" class="link"> About </RouterLink>
+      <href v-if="loggedIn" @click="handleLogout" class="link">Logout</href>
     </div>
   </nav>
 </template>
+
+<script setup>
+import router from '@/router'
+import { getMe, logout } from '@/services/auth'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const loggedIn = ref(false)
+const route = useRoute()
+
+async function checkAuth() {
+  try {
+    await getMe()
+    loggedIn.value = true
+  } catch (e) {
+    loggedIn.value = false
+  }
+}
+
+async function handleLogout() {
+  try {
+    await logout()
+    loggedIn.value = false
+    router.push('/')
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+onMounted(checkAuth)
+//Rerun script when route changes
+watch(route, checkAuth)
+</script>
 
 <style scoped>
 .nav {
@@ -42,5 +75,7 @@
 
 .link:hover {
   text-decoration: underline;
+  color: var(--hover);
+  cursor: pointer;
 }
 </style>
