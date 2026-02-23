@@ -1,9 +1,6 @@
 <template>
   <div class="page">
     <div>
-      <h1>Your basket</h1>
-      <p>Items in your shopping cart</p>
-
       <p v-if="loading">Loading basket...</p>
       <p v-else-if="error">{{ error }}</p>
 
@@ -12,6 +9,7 @@
 
         <div v-else class="layout">
           <div class="layout__basket">
+            <div class="basket__header">Your basket</div>
             <div v-for="it in items" :key="it.product_id" class="item_container">
               <img
                 class="item_container__img"
@@ -19,16 +17,22 @@
                 alt=""
                 @error="onImgError"
               />
-              <div class="item_container__data">
+
+              <div>
                 <router-link class="item_container__name" :to="`/products/${it.product_id}`">
                   {{ it.product_name }}
                 </router-link>
                 <div class="item_container__manufacturer">{{ it.manufacturer }}</div>
                 <div>
-                  Qty: <b>{{ it.quantity }}</b>
                   <span :class="it.available ? 'ok' : 'bad'">
                     {{ it.available ? 'Available' : 'Unavailable' }}
                   </span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  Qty: <b>{{ it.quantity }}</b>
                 </div>
                 <div>
                   Unit: <b>{{ money(it.price) }}</b>
@@ -37,17 +41,24 @@
                   Total: <b>{{ money(it.price * it.quantity) }}</b>
                 </div>
               </div>
+
+              <div class="basket__delete">
+                <img
+                  src="@/assets/trash.svg"
+                  alt="delete"
+                  class="delete-icon"
+                  @click="handleDelete(it.product_id)"
+                />
+              </div>
             </div>
           </div>
 
-          <div>
-            <div>Subtotal</div>
+          <div class="checkout">
+            <div class="checkout__header">Subtotal</div>
+            <div class="checkout__total">${{ money(totalprice) }}</div>
             <div>
-              <b>{{ money(totalprice) }}</b>
-            </div>
-            <div>
-              <button @click="router.push('/products')">← Back</button>
               <button @click="doCheckout" :disabled="items.length === 0">Checkout</button>
+              <button @click="router.push('/products')">Continue shopping</button>
             </div>
           </div>
         </div>
@@ -110,61 +121,123 @@ async function doCheckout() {
     error.value = e?.message || 'Checkout failed'
   }
 }
-
 onMounted(fetchBasket)
 </script>
 
 <style>
 .layout {
   display: grid;
-  grid-template-areas: 'basket checkout';
+  grid-template-areas:
+    'basket checkout'
+    'basket .';
   grid-template-columns: 2fr 1fr;
   gap: 12px;
 }
 
 .layout__basket {
   grid-area: basket;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 5px;
-  background-color: white;
-  padding: 40px;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  padding: 24px;
+  gap: 16px;
+  box-shadow: 3px 3px var(--shadow);
+  border-radius: 24px;
 }
 
-.layout__checkout {
-  grid-area: checkout;
+.basket__header {
+  font-weight: bold;
+  font-size: 2.3rem;
 }
-
 .item_container {
   display: grid;
-  grid-template-areas: 'img data';
-  grid-template-columns: 128px 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
+  padding: 24px;
   gap: 20px;
-  background-color: white;
-  border-radius: 8px;
-  border: 1px solid grey;
-  padding: 20px;
+  align-items: center;
+  border-radius: 24px;
+  background-color: var(--shadow);
 }
 
 .item_container__img {
-  grid-area: img;
   width: 128px;
   height: 128px;
   object-fit: cover;
   border-radius: 8px;
 }
 
-.item_container__data {
-  grid-area: data;
-  display: flex;
-  flex-direction: column;
+.item_container__manufacturer {
+  font-weight: 500;
+  font-size: 1.1rem;
 }
-
 .item_container__name {
   font-weight: bold;
   font-size: 1.4rem;
   text-decoration: none;
   color: inherit;
+}
+
+.checkout {
+  grid-area: checkout;
+  background-color: var(--surface);
+  padding: 24px;
+  border-radius: 24px;
+  box-shadow: 3px 3px var(--shadow);
+  text-align: center;
+}
+
+.checkout__header {
+  font-weight: 600;
+  font-size: 2.5rem;
+}
+.checkout__total {
+  font-size: 2rem;
+}
+
+.basket__delete {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  background-color: var(--surface);
+  padding: 8px 16px;
+  width: 20px;
+  border-radius: 999px;
+}
+
+.delete-icon {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-areas:
+      'checkout'
+      'basket';
+    grid-template-columns: 1fr;
+  }
+
+  .item_container__img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .layout__basket {
+    padding: 8px;
+  }
+  .item_container {
+    padding: 8px;
+  }
+  .basket__header {
+    text-align: center;
+  }
 }
 </style>
