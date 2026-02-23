@@ -17,6 +17,7 @@
                 alt=""
                 @error="onImgError"
               />
+
               <div>
                 <router-link class="item_container__name" :to="`/products/${it.product_id}`">
                   {{ it.product_name }}
@@ -28,6 +29,7 @@
                   </span>
                 </div>
               </div>
+
               <div>
                 <div>
                   Qty: <b>{{ it.quantity }}</b>
@@ -39,8 +41,18 @@
                   Total: <b>{{ money(it.price * it.quantity) }}</b>
                 </div>
               </div>
+
+              <div class="basket__delete">
+                <img
+                  src="@/assets/trash.svg"
+                  alt="delete"
+                  class="delete-icon"
+                  @click="handleDelete(it.product_id)"
+                />
+              </div>
             </div>
           </div>
+
           <div class="checkout">
             <div class="checkout__header">Subtotal</div>
             <div class="checkout__total">${{ money(totalprice) }}</div>
@@ -109,7 +121,6 @@ async function doCheckout() {
     error.value = e?.message || 'Checkout failed'
   }
 }
-
 onMounted(fetchBasket)
 </script>
 
@@ -139,7 +150,8 @@ onMounted(fetchBasket)
   font-size: 2.3rem;
 }
 .item_container {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
   padding: 24px;
   gap: 20px;
   align-items: center;
@@ -180,6 +192,27 @@ onMounted(fetchBasket)
 }
 .checkout__total {
   font-size: 2rem;
+}
+
+.basket__delete {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  background-color: var(--surface);
+  padding: 8px 16px;
+  width: 20px;
+  border-radius: 999px;
+}
+
+.delete-icon {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.delete-icon:hover {
+  opacity: 1;
 }
 
 @media (max-width: 900px) {

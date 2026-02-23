@@ -51,7 +51,7 @@ async function onSubmit() {
 }
 </script>
 
-<style>
+<style lang="css" scoped>
 .container {
   display: flex;
   flex-direction: column;
@@ -85,5 +85,21 @@ async function onSubmit() {
   .container {
     flex-direction: column;
   }
+}
+
+input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #bbb;
+  border-radius: px;
+}
+
+input:focus {
+  outline-style: double;
+  outline-color: var(--hover);
 }
 </style>
