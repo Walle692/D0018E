@@ -8,8 +8,11 @@ import (
 
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 	"github.com/walle692/D0018E/BackEnd/version2/handlers"
-	"github.com/walle692/D0018E/BackEnd/version2/services"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/services/basket_services"
+	"github.com/walle692/D0018E/BackEnd/version2/services/order_services"
+	"github.com/walle692/D0018E/BackEnd/version2/services/products_services"
+	"github.com/walle692/D0018E/BackEnd/version2/services/user_services"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/products"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -84,27 +87,27 @@ func engine() *gin.Engine {
 	// enable the authenticate session for this group
 	private.Use(handlers.AuthenticateSession)
 	{
-		private.GET("/me", services.Me)
-		private.GET("/status", services.Status)
-		private.GET("/products", services.GetProducts)
-		private.GET("/products/:id", utils.GetProduct)
-		private.POST("/basket/add", services.AddToBasket)
-		private.DELETE("/basket/delete", services.DeleteFromBasket)
-		private.GET("/basket", services.GetBasket)
-		private.GET("/orders", services.GetUserOrders)
-		private.POST("/checkout", services.CheckOut)
+		private.GET("/me", user_services.Me)
+		private.GET("/status", user_services.Status)
+		private.GET("/products", products_services.GetProducts)
+		private.GET("/products/:id", products.GetProduct)
+		private.POST("/basket/add", basket_services.AddToBasket)
+		private.DELETE("/basket/delete", basket_services.DeleteFromBasket)
+		private.GET("/basket", basket_services.GetBasket)
+		private.GET("/orders", order_services.GetUserOrders)
+		private.POST("/checkout", basket_services.CheckOut)
 	}
 	seller := r.Group("/seller")
 	seller.Use(handlers.AuthenticateSession, handlers.AuthenticateSellerSession)
 	{
-		seller.POST("/create-product", services.CreateProduct)
-		seller.GET("/products", services.GetSellerProduct)
+		seller.POST("/create-product", products_services.CreateProduct)
+		seller.GET("/products", products_services.GetSellerProduct)
 	}
 
 	admin := r.Group("/admin")
 	admin.Use(handlers.AuthenticateSession, handlers.AuthenticateAdminSession)
 	{
-		admin.POST("/create-user", services.MakeUser)
+		admin.POST("/create-user", user_services.MakeUser)
 	}
 
 	return r

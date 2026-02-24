@@ -1,4 +1,4 @@
-package utils_test
+package tests
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/walle692/D0018E/BackEnd/version2/test_setup"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/order"
 )
 
 /*
@@ -21,7 +21,7 @@ func TestRootOrders(t *testing.T) {
 
 	t.Run("no orders", func(t *testing.T) {
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
-		out, err := utils.GetUserOrders(buyerID)
+		out, err := order.GetUserOrders(buyerID)
 		require.NoError(t, err)
 		require.Empty(t, out)
 	})
@@ -32,7 +32,7 @@ func TestRootOrders(t *testing.T) {
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, totalPrice)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, productID, 1, 1)
 
-		out, err := utils.GetUserOrders(buyerID)
+		out, err := order.GetUserOrders(buyerID)
 		require.NoError(t, err)
 		require.Len(t, out, 1)
 
@@ -48,11 +48,11 @@ func TestRootOrders(t *testing.T) {
 		order2ID := test_setup.SeedOrder(t, ctx, pool, buyerID, totalPrice_2)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, order2ID, productID, 1, 1)
 
-		out, err := utils.GetUserOrders(buyerID)
+		out, err := order.GetUserOrders(buyerID)
 		require.NoError(t, err)
 		require.Len(t, out, 2)
 
-		byID := map[int]utils.OrderResponse{}
+		byID := map[int]order.OrderResponse{}
 		for _, o := range out {
 			byID[o.Order_id] = o
 		}
@@ -78,7 +78,7 @@ func TestOrderItems(t *testing.T) {
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, 1)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p1, 100, 100)
 
-		out, err := utils.GetUserOrders(buyerID)
+		out, err := order.GetUserOrders(buyerID)
 		require.NoError(t, err)
 
 		require.Len(t, out[0].Order_items, 1)
@@ -89,7 +89,7 @@ func TestOrderItems(t *testing.T) {
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p1, 100, 100)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p2, 200, 200)
 
-		out, err := utils.GetUserOrders(buyerID)
+		out, err := order.GetUserOrders(buyerID)
 		require.NoError(t, err)
 
 		require.Len(t, out[0].Order_items, 2)

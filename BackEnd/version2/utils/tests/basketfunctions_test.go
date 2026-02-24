@@ -1,4 +1,4 @@
-package utils_test
+package tests
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/require"
 	"github.com/walle692/D0018E/BackEnd/version2/test_setup"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/basket"
 )
 
 /*
@@ -28,7 +28,7 @@ func TestBasketToOrder(t *testing.T) {
 		qty := p1qty + 1
 		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty)
 
-		orderID, err := utils.ConvertBasketToOrder(basketID)
+		orderID, err := basket.ConvertBasketToOrder(basketID)
 		require.Error(t, err)
 		require.Zero(t, orderID)
 		//Check that order item wasn't deleted
@@ -49,7 +49,7 @@ func TestBasketToOrder(t *testing.T) {
 		price, qty := 100.0, 10
 		basketItemID := test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, qty)
 
-		orderID, err := utils.ConvertBasketToOrder(basketID)
+		orderID, err := basket.ConvertBasketToOrder(basketID)
 		require.NoError(t, err)
 		require.NotZero(t, orderID)
 		//Test that basket item is removed from table
@@ -89,7 +89,7 @@ func TestBasketToOrder(t *testing.T) {
 		price_2, qty_2 := 200.0, 20
 		basketItemID_2 := test_setup.SeedBasketItem(t, ctx, pool, basketID, p2, qty_2)
 
-		orderID, err := utils.ConvertBasketToOrder(basketID)
+		orderID, err := basket.ConvertBasketToOrder(basketID)
 		require.NoError(t, err)
 		require.NotZero(t, orderID)
 		//Test that basket item is removed from table
@@ -129,7 +129,7 @@ func TestBasketToOrder(t *testing.T) {
 
 		pool.Exec(ctx, `UPDATE myschema.products SET active = FALSE WHERE product_id=$1`, p1)
 
-		orderID, err := utils.ConvertBasketToOrder(basketID)
+		orderID, err := basket.ConvertBasketToOrder(basketID)
 		require.Error(t, err)
 		t.Cleanup(func() { deleteNewOrder(t, ctx, pool, orderID) })
 

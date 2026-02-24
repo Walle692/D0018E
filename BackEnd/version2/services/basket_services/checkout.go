@@ -1,21 +1,21 @@
-package services
+package basket_services
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/basket"
 )
 
 func CheckOut(c *gin.Context) {
 
-	basketID, err := utils.GetBasketID(c)
+	basketID, err := basket.GetBasketID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not get basket"})
 		return
 	}
 
-	orderID, err := utils.ConvertBasketToOrder(basketID)
+	orderID, err := basket.ConvertBasketToOrder(basketID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "could not convert basket"})
 	}

@@ -1,10 +1,10 @@
-package services
+package user_services
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/user"
 )
 
 type CreateUserRequest struct {
@@ -21,7 +21,7 @@ func MakeUser(c *gin.Context) {
 		return
 	}
 
-	if err := utils.CreateUser(req.Username, req.Password, req.Role); err != nil {
+	if err := user.CreateUser(req.Username, req.Password, req.Role); err != nil {
 		// optionally detect duplicate username, etc.
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not create user"})
 		return

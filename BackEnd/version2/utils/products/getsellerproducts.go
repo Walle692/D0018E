@@ -1,4 +1,4 @@
-package utils
+package products
 
 import (
 	"context"
