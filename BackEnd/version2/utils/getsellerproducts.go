@@ -9,10 +9,13 @@ import (
 type SellerProduct struct {
 	Product_id   int     `json:"product_id"`
 	Product_name string  `json:"product_name"`
+	Manufacturer string  `json:"manufacturer"`
 	Picture_url  string  `json:"picture_url"`
 	Price        float64 `json:"price"`
 	Stock        int     `json:"stock"`
 	Active       bool    `json:"active"`
+	Description  string  `json:"description"`
+	Screen_size  float32 `json:"screen_size"`
 }
 
 func GetSellerProduct(sellerID int) ([]SellerProduct, error) {
@@ -22,7 +25,7 @@ func GetSellerProduct(sellerID int) ([]SellerProduct, error) {
 	products := make([]SellerProduct, 0)
 
 	rows, err := pool.Query(ctx, `
-		SELECT product_id, product_name, picture_url, price, stock, active
+		SELECT product_id, product_name, picture_url, price, stock, active, screen_size, description, manufacturer
 		FROM myschema.products
 		WHERE seller_user_id = $1
 	`, sellerID)
@@ -32,7 +35,7 @@ func GetSellerProduct(sellerID int) ([]SellerProduct, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var s SellerProduct
-		if err := rows.Scan(&s.Product_id, &s.Product_name, &s.Picture_url, &s.Price, &s.Stock, &s.Active); err != nil {
+		if err := rows.Scan(&s.Product_id, &s.Product_name, &s.Picture_url, &s.Price, &s.Stock, &s.Active, &s.Screen_size, &s.Description, &s.Manufacturer); err != nil {
 			return nil, err
 		}
 		products = append(products, s)
