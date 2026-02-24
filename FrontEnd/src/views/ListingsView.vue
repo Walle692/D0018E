@@ -94,7 +94,6 @@
         <div v-else-if="productsError">{{ productsError }}</div>
         <div v-else-if="products.length === 0">No products yet.</div>
 
-        <!-- Place holder for sellers products-->
         <div class="item" v-else v-for="product in products" :key="product.product_id">
           <img class="item__image" :src="product.picture_url" alt="image" />
           <div class="item__info">
@@ -105,7 +104,9 @@
           </div>
 
           <div class="btnwrap"><button type="button" @click="openEdit(product)">Edit</button></div>
-          <div class="btnwrap"><button type="button" @click="">Unlist</button></div>
+          <div class="btnwrap">
+            <button type="button" @click="delistProduct(product.product_id)">Delist</button>
+          </div>
         </div>
       </div>
     </div>
@@ -204,7 +205,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { createProduct, getSellerProducts } from '@/services/products'
+import { createProduct, delistProduct, getSellerProducts } from '@/services/products'
 
 const formMode = ref('create') // 'create' | 'edit'
 const editingProductId = ref(null)
@@ -268,6 +269,22 @@ async function submitCreate() {
     await createProduct(form.value)
     success.value = true
     form.value = getDefaultForm()
+    await loadSellerProducts()
+  } catch (e) {
+    error.value = e?.message || 'Failed to create product'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function submitDelist(productID) {
+  loading.value = true
+  error.value = ''
+  success.value = false
+
+  try {
+    await delistProduct(productID)
+    success.value = true
     await loadSellerProducts()
   } catch (e) {
     error.value = e?.message || 'Failed to create product'

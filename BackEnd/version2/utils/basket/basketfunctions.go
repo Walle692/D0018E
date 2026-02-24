@@ -65,7 +65,7 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 			WHERE bi.basket_id = $1 AND p.product_id = bi.product_id
 			RETURNING p.product_id, p.stock
 		)
-		SELECT product_id FROM cte WHERE stock < 0
+		SELECT product_id FROM cte WHERE stock < 0 AND active=false
 		LIMIT 1
 		`, basketID,
 	).Scan(&errNoStock); err == nil {
@@ -123,5 +123,3 @@ func DeleteBasketItemsWithProduct(userID int, productID int) error {
 	return nil
 
 }
-
-//TODO DELETE BASKET ITEMS

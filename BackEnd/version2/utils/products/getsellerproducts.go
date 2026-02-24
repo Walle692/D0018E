@@ -27,7 +27,7 @@ func GetSellerProduct(sellerID int) ([]SellerProduct, error) {
 	rows, err := pool.Query(ctx, `
 		SELECT product_id, product_name, picture_url, price, stock, active, screen_size, description, manufacturer
 		FROM myschema.products
-		WHERE seller_user_id = $1
+		WHERE seller_user_id = $1 AND active = true
 	`, sellerID)
 	if err != nil {
 		return nil, err
