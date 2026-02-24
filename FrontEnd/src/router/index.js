@@ -50,6 +50,11 @@ const router = createRouter({
       name: 'basket',
       component: () => import('../views/BasketView.vue'),
     },
+    {
+      path: '/listings',
+      name: 'listings',
+      component: () => import('../views/ListingsView.vue'),
+    },
   ],
 })
 
