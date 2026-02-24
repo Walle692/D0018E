@@ -124,7 +124,7 @@ async function doCheckout() {
 onMounted(fetchBasket)
 </script>
 
-<style>
+<style scoped>
 .layout {
   display: grid;
   grid-template-areas:
@@ -175,6 +175,10 @@ onMounted(fetchBasket)
   font-size: 1.4rem;
   text-decoration: none;
   color: inherit;
+}
+
+.item_container__name:hover {
+  color: var(--hover);
 }
 
 .checkout {

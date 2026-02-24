@@ -49,7 +49,7 @@ func GetUserBasket(userID int) (BasketResponse, error) {
 		if err := rows.Scan(&bi.Quantity, &bi.Product_id, &bi.Product_name, &bi.Manufacturer, &bi.Picture_url, &bi.Price, &bi.Available); err != nil {
 			return basket, err
 		}
-		total = total + bi.Price
+		total = total + bi.Price*float64(bi.Quantity)
 		basketItem = append(basketItem, bi)
 	}
 	if err = rows.Err(); err != nil {

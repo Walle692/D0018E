@@ -1,39 +1,39 @@
 <template>
   <div class="page">
     <div class="card">
-      <h1>My Orders</h1>
+      <div class="card__header">My Orders</div>
 
-      <p v-if="loading">Loading...</p>
-      <p v-else-if="error" class="error">{{ error }}</p>
+      <p v-if="loading">Loading orders...</p>
+      <p v-else-if="error">{{ error }}</p>
 
       <template v-else>
-        <p v-if="orders.length === 0" class="muted">No orders yet.</p>
+        <p v-if="orders.length === 0">You have no orders.</p>
 
-        <div v-for="o in orders" :key="o.order_id" class="order">
-          <div class="orderHeader">
+        <div v-for="o in [...orders].reverse()" :key="o.order_id" class="order">
+          <div class="order__header">
             <div>
-              <div class="orderTitle">Order #{{ o.order_id }}</div>
-              <div class="muted">{{ formatDate(o.orderdate) }}</div>
+              <div class="order__title">Order #{{ o.order_id }}</div>
+              <div class="order__date">{{ formatDate(o.orderdate) }}</div>
             </div>
-            <div class="total">Total: {{ money(o.totalprice) }}</div>
+            <div class="order__total">Total: {{ money(o.totalprice) }}</div>
           </div>
 
-          <div class="items">
+          <div class="order__items">
             <div v-for="(it, idx) in o.order_items" :key="idx" class="item">
               <img
                 v-if="it.product?.picture_url"
                 :src="it.product.picture_url || placeholderImg"
-                class="thumb"
+                class="item__image"
                 alt=""
                 @error="onImgError"
               />
 
-              <div class="info">
-                <router-link :to="`/products/${it.product.product_id}`" class="name">
+              <div>
+                <router-link class="item__name" :to="`/products/${it.product.product_id}`">
                   {{ it.product.product_name }}
                 </router-link>
 
-                <div class="muted">Qty: {{ it.quantity }} · Price: {{ money(it.price) }}</div>
+                <div>Qty: {{ it.quantity }} · Price: {{ money(it.price) }}</div>
               </div>
             </div>
           </div>
@@ -90,63 +90,58 @@ const money = (x) => {
 }
 
 .card {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border-radius: 24px;
+  background-color: var(--surface);
+  box-shadow: 3px 3px var(--shadow);
+  gap: 24px;
 }
 
-h1 {
-  margin: 0 0 12px;
-}
-
-.error {
-  color: #b00020;
-}
-
-.muted {
-  color: #666;
-  font-size: 13px;
+.card__header {
+  font-weight: bold;
+  font-size: 2rem;
 }
 
 .order {
-  margin-top: 14px;
-  padding: 14px;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
+  padding: 24px;
+  border-radius: 24px;
+  background-color: var(--bg);
 }
 
-.orderHeader {
+.order__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.orderTitle {
-  font-weight: 700;
+.order__title {
+  font-weight: bold;
 }
 
-.total {
-  font-weight: 700;
+.order__total {
+  font-weight: bold;
 }
 
-.items {
+.order__items {
   margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .item {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
 }
 
-.thumb {
+.item__image {
   width: 64px;
   height: 64px;
-  border-radius: 8px;
+  border-radius: 16px;
   border: 1px solid #eee;
   object-fit: cover;
   display: flex;
@@ -154,18 +149,20 @@ h1 {
   justify-content: center;
 }
 
-.info {
+.item__info {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.name {
+.item__name {
+  text-decoration: none;
+  color: inherit;
   font-weight: 700;
   text-decoration: none;
 }
 
-.name:hover {
-  text-decoration: underline;
+.item__name:hover {
+  color: var(--hover);
 }
 </style>

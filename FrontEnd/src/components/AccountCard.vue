@@ -19,6 +19,7 @@ const emit = defineEmits(['click'])
   border-radius: 10px;
   padding: 16px;
   background: var(--surface);
+  box-shadow: 3px 3px var(--shadow);
 }
 .cardTitle {
   margin: 0 0 6px;
