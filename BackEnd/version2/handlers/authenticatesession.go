@@ -33,3 +33,14 @@ func AuthenticateAdminSession(c *gin.Context) {
 	}
 	c.Next()
 }
+
+func AuthenticateSellerSession(c *gin.Context) {
+	sessions := sessions.Default(c)
+
+	role := sessions.Get(global.Role)
+	if role != "seller" {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	c.Next()
+}

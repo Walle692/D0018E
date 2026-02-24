@@ -94,6 +94,12 @@ func engine() *gin.Engine {
 		private.GET("/orders", services.GetUserOrders)
 		private.POST("/checkout", services.CheckOut)
 	}
+	seller := r.Group("/seller")
+	seller.Use(handlers.AuthenticateSession, handlers.AuthenticateSellerSession)
+	{
+		seller.POST("/create-product", services.CreateProduct)
+	}
+
 	admin := r.Group("/admin")
 	admin.Use(handlers.AuthenticateSession, handlers.AuthenticateAdminSession)
 	{
