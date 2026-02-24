@@ -61,17 +61,73 @@
             </div>
           </div>
         </div>
+        <div class="reviews">
+          <div class="reviews__header">Reviews</div>
+
+          <!-- Place holder until fetch orders API is done-->
+          <div class="reviews__review">
+            <div>
+              <div class="review__username">testcompany.net</div>
+              <div class="review__rating">★★★★</div>
+            </div>
+
+            <div class="review__test">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque rhoncus fermentum est
+              vitae auctor. Duis pulvinar, metus ac sagittis convallis, erat dui pulvinar tellus, at
+              scelerisque quam tellus eget augue. Nulla facilisi. Donec efficitur pretium rutrum.
+              Praesent aliquet interdum accumsan. In placerat lectus nibh, mollis pellentesque
+              lectus egestas nec. Aenean a congue magna. Suspendisse feugiat, orci nec ultricies
+              efficitur, purus nulla sagittis tortor, sit amet tempus tellus leo a ligula. Integer
+              luctus, tortor in sagittis hendrerit, tellus elit interdum turpis, eu dictum dolor
+              lorem eget enim. Etiam eget feugiat purus, eget aliquam neque. Ut a tempus ligula, vel
+              congue mauris. Aenean feugiat magna orci, quis accumsan sapien imperdiet vitae. Proin
+              sit amet lacus eu libero sollicitudin euismod. In hac habitasse platea dictumst.
+            </div>
+          </div>
+        </div>
       </template>
     </div>
   </div>
 </template>
 
 <style scoped>
+.reviews {
+  margin-top: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+  border-radius: 24px;
+  gap: 24px;
+  box-shadow: 5px 5px var(--shadow);
+}
+
+.reviews__header {
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.reviews__review {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  padding: 24px;
+  border-radius: 24px;
+  gap: 16px;
+}
+
+.review__username {
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+.review__rating {
+  font-size: 1.2rem;
+}
 .layout {
   display: grid;
   grid-template-areas:
     'product buy'
-    'product review';
+    'product .';
   grid-template-columns: 3fr 2fr;
   gap: 24px;
 }
@@ -179,6 +235,23 @@ input[type='number'] {
 input:focus {
   outline-style: double;
   outline-color: var(--hover);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-areas:
+      'product'
+      'buy';
+    grid-template-columns: 1fr;
+  }
+
+  .layout__product {
+    grid-template-areas:
+      'head'
+      'image'
+      'desc';
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 
