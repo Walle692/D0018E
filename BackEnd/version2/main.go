@@ -98,6 +98,7 @@ func engine() *gin.Engine {
 	seller.Use(handlers.AuthenticateSession, handlers.AuthenticateSellerSession)
 	{
 		seller.POST("/create-product", services.CreateProduct)
+		seller.GET("/products", services.GetSellerProduct)
 	}
 
 	admin := r.Group("/admin")

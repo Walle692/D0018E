@@ -2,7 +2,9 @@
   <div class="page">
     <div class="layout">
       <div class="product-form">
-        <div class="form__header">Create a new product</div>
+        <div class="form__header">
+          {{ formMode === 'create' ? 'Create a new product' : 'Edit product' }}
+        </div>
 
         <div class="pair">
           <div class="form__group">
@@ -67,23 +69,43 @@
             v-model="form.description"
             placeholder="4k Monitor 144hz 1920x1080"
           />
-
-          <button class="submit-btn" type="button" :disabled="loading" @click="submit">
+          <button
+            v-if="formMode === 'create'"
+            class="submit-btn"
+            type="button"
+            :disabled="loading"
+            @click="submitCreate"
+          >
             {{ loading ? 'Creating...' : 'Create product' }}
+          </button>
+
+          <button v-else class="submit-btn" type="button" :disabled="loading" @click="submitEdit">
+            {{ loading ? 'Saving...' : 'Save changes' }}
+          </button>
+
+          <button v-if="formMode === 'edit'" type="button" :disabled="loading" @click="cancelEdit">
+            Go back
           </button>
         </div>
       </div>
       <div class="products">
         <div class="products__header">Your products</div>
+        <div v-if="productsLoading">Loading products...</div>
+        <div v-else-if="productsError">{{ productsError }}</div>
+        <div v-else-if="products.length === 0">No products yet.</div>
+
         <!-- Place holder for sellers products-->
-        <div class="item">
-          <img class="item__image" src="https://placehold.co/400x400" alt="image" />
+        <div class="item" v-else v-for="product in products" :key="product.product_id">
+          <img class="item__image" :src="product.picture_url" alt="image" />
           <div class="item__info">
-            <div class="item__name">Placeholder</div>
-            <div class="item__price">Price : 399</div>
-            <div class="item__stock">Stock : 200</div>
-            <div class="item__available">Available: No/Yes</div>
+            <div class="item__name">{{ product.product_name }}</div>
+            <div class="item__price">Price: {{ product.price }}</div>
+            <div class="item__stock">Stock: {{ product.stock }}</div>
+            <div class="item__available">Available: {{ product.active ? 'Yes' : 'No' }}</div>
           </div>
+
+          <div class="btnwrap"><button type="button" @click="openEdit(product)">Edit</button></div>
+          <div class="btnwrap"><button type="button" @click="">Unlist</button></div>
         </div>
       </div>
     </div>
@@ -108,6 +130,7 @@
 
 .item__image {
   object-fit: cover;
+  width: 96px;
   border-radius: 24px;
 }
 
@@ -120,6 +143,7 @@
 .products {
   display: flex;
   flex-direction: column;
+  align-self: start;
   background: var(--surface);
   padding: 24px;
   border-radius: 24px;
@@ -179,12 +203,19 @@
 </style>
 
 <script setup>
-import { ref } from 'vue'
-import { createProduct } from '@/services/products'
+import { onMounted, ref } from 'vue'
+import { createProduct, getSellerProducts } from '@/services/products'
+
+const formMode = ref('create') // 'create' | 'edit'
+const editingProductId = ref(null)
 
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
+
+const productsLoading = ref(false)
+const productsError = ref('')
+const products = ref([])
 
 const getDefaultForm = () => ({
   product_name: '',
@@ -197,7 +228,38 @@ const getDefaultForm = () => ({
 })
 const form = ref(getDefaultForm())
 
-async function submit() {
+//Manage state
+function resetFormToCreateMode() {
+  formMode.value = 'create'
+  editingProductId.value = null
+  form.value = getDefaultForm()
+}
+
+function openEdit(product) {
+  formMode.value = 'edit'
+  editingProductId.value = product.product_id
+  error.value = ''
+  success.value = false
+
+  form.value = {
+    product_name: product.product_name ?? '',
+    price: product.price ?? null,
+    description: product.description ?? '',
+    stock: product.stock ?? null,
+    screen_size: product.screen_size ?? null,
+    manufacturer: product.manufacturer ?? '',
+    picture_url: product.picture_url ?? '',
+  }
+}
+
+function cancelEdit() {
+  error.value = ''
+  success.value = false
+  resetFormToCreateMode()
+}
+
+// API calls
+async function submitCreate() {
   loading.value = true
   error.value = ''
   success.value = false
@@ -206,10 +268,39 @@ async function submit() {
     await createProduct(form.value)
     success.value = true
     form.value = getDefaultForm()
+    await loadSellerProducts()
   } catch (e) {
     error.value = e?.message || 'Failed to create product'
   } finally {
     loading.value = false
   }
 }
+
+async function submitEdit() {
+  return
+}
+
+async function loadSellerProducts() {
+  productsLoading.value = true
+  productsError.value = ''
+
+  try {
+    const data = await getSellerProducts()
+
+    // If your backend returns an array directly:
+    products.value = Array.isArray(data) ? data : []
+
+    // If backend returns { products: [...] } instead, use:
+    //products.value = Array.isArray(data.products) ? data.products : []
+  } catch (e) {
+    productsError.value = e?.message || 'Failed to load products'
+    products.value = []
+  } finally {
+    productsLoading.value = false
+  }
+}
+
+onMounted(() => {
+  loadSellerProducts()
+})
 </script>
