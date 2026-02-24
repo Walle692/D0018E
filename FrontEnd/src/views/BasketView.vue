@@ -124,7 +124,7 @@ async function doCheckout() {
 onMounted(fetchBasket)
 </script>
 
-<style>
+<style scoped>
 .layout {
   display: grid;
   grid-template-areas:
