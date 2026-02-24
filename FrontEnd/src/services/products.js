@@ -41,3 +41,16 @@ export async function createProduct(product) {
   }
   return true
 }
+
+export async function getSellerProducts() {
+  const res = await fetch(`${BASE_URL}/seller/products`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'get products failed')
+  }
+
+  return await res.json()
+}
