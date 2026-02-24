@@ -27,3 +27,17 @@ export async function getProductById(id) {
 
   return await res.json()
 }
+
+export async function createProduct(product) {
+  const res = await fetch(`${BASE_URL}/seller/create-product`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(product),
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'error creating product')
+  }
+  return true
+}
