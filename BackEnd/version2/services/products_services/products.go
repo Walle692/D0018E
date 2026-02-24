@@ -13,7 +13,7 @@ func GetProducts(c *gin.Context) {
 	ctx := context.Background()
 
 	// query
-	query := "SELECT * FROM myschema.products"
+	query := "SELECT * FROM myschema.products WHERE active=true"
 
 	// get db connection
 	postgres := global.Get()

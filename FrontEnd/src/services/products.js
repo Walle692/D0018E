@@ -54,3 +54,17 @@ export async function getSellerProducts() {
 
   return await res.json()
 }
+
+export async function delistProduct(productID) {
+  const res = await fetch(`${BASE_URL}/seller/products/delist`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ product_id: productID }),
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'error delisting product')
+  }
+  return true
+}
