@@ -8,7 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/user"
 )
 
 type LoginRequest struct {
@@ -36,7 +36,7 @@ func Login(c *gin.Context) {
 	}
 
 	// check for username and password match, usually from a database
-	dbpassword, role, userID, err := utils.GetPassword(username)
+	dbpassword, role, userID, err := user.GetPassword(username)
 	// if there is error or passwords do not match failure
 	if err != nil || dbpassword != password {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})

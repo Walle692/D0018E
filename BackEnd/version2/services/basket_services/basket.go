@@ -1,4 +1,4 @@
-package services
+package basket_services
 
 import (
 	"net/http"
@@ -7,7 +7,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/basket"
 )
 
 // GetBasket returns the contents of the user's basket
@@ -20,10 +20,10 @@ func GetBasket(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	basket, err := utils.GetUserBasket(userID)
+	basketItems, err := basket.GetUserBasket(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get users basket"})
 	}
 	// send the json to the client
-	c.JSON(http.StatusOK, basket)
+	c.JSON(http.StatusOK, basketItems)
 }

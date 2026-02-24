@@ -1,4 +1,4 @@
-package utils_test
+package tests
 
 import (
 	"testing"
@@ -6,14 +6,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/walle692/D0018E/BackEnd/version2/test_setup"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/user"
 )
 
 func Test_CreateUser_InsertsRow(t *testing.T) {
 	ctx, pool := test_setup.SetUpDB(t)
 
 	username, password, role := "test_username", "test_password", "buyer"
-	err := utils.CreateUser(username, password, role)
+	err := user.CreateUser(username, password, role)
 	require.NoError(t, err)
 
 	var gotRole string

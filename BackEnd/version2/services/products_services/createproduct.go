@@ -1,4 +1,4 @@
-package services
+package products_services
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
-	"github.com/walle692/D0018E/BackEnd/version2/utils"
+	"github.com/walle692/D0018E/BackEnd/version2/utils/products"
 )
 
 // takes the product id and quantity from the request and adds the product to the user's basket
@@ -39,7 +39,7 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	// create the basketItem in the database
-	if err := utils.CreateProduct(userID, req.ProductName, req.Manufacturer, req.Description, req.PictureURL, req.ScreenSize, req.Price, req.Stock); err != nil {
+	if err := products.CreateProduct(userID, req.ProductName, req.Manufacturer, req.Description, req.PictureURL, req.ScreenSize, req.Price, req.Stock); err != nil {
 		fmt.Println("DEBUG: CREATE BASKET ITEM ERROR")
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could delete item"})
