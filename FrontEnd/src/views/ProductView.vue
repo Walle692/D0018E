@@ -288,7 +288,7 @@ function preventBadInput() {
 async function addToBasket(productId, quantity) {
   try {
     await addToBasketApi(productId, quantity)
-    alert('Product added to basket!')
+    router.push('/basket')
   } catch (e) {
     alert(e?.message || 'Failed to add product to basket')
   }

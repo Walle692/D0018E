@@ -177,6 +177,10 @@ onMounted(fetchBasket)
   color: inherit;
 }
 
+.item_container__name:hover {
+  color: var(--hover);
+}
+
 .checkout {
   grid-area: checkout;
   background-color: var(--surface);
