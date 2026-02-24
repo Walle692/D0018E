@@ -89,6 +89,7 @@ func engine() *gin.Engine {
 		private.GET("/products", services.GetProducts)
 		private.GET("/products/:id", utils.GetProduct)
 		private.POST("/basket/add", services.AddToBasket)
+		private.DELETE("/basket/delete", services.DeleteFromBasket)
 		private.GET("/basket", services.GetBasket)
 		private.GET("/orders", services.GetUserOrders)
 		private.POST("/checkout", services.CheckOut)

@@ -11,6 +11,20 @@ export async function addToBasket(productId, quantity) {
   return res.ok
 }
 
+export async function deleteFromBasket(product_id) {
+  const res = await fetch(`${BASE_URL}/private/basket/delete`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ product_id }),
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'delete from basket failed')
+  }
+  return true
+}
+
 export async function getBasket() {
   const res = await fetch(`${BASE_URL}/private/basket`, {
     method: 'GET',

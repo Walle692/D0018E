@@ -70,7 +70,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { getBasket, checkoutBasket } from '@/services/basket'
+import { getBasket, checkoutBasket, deleteFromBasket } from '@/services/basket'
 
 const router = useRouter()
 
@@ -96,6 +96,7 @@ function money(x) {
   return Number.isNaN(n) ? '-' : n.toFixed(2)
 }
 
+// API Calls
 async function fetchBasket() {
   loading.value = true
   error.value = ''
@@ -121,6 +122,16 @@ async function doCheckout() {
     error.value = e?.message || 'Checkout failed'
   }
 }
+
+async function handleDelete(productId) {
+  try {
+    await deleteFromBasket(productId)
+    await fetchBasket()
+  } catch (e) {
+    error.value = e?.message || 'Failed to delete item'
+  }
+}
+
 onMounted(fetchBasket)
 </script>
 

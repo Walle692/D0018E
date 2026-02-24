@@ -107,4 +107,21 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 	return orderID, nil
 }
 
+func DeleteBasketItemsWithProduct(userID int, productID int) error {
+	ctx := context.Background()
+	pool := global.Get().Pool()
+
+	if _, err := pool.Exec(ctx, `
+		DELETE FROM myschema.basketitem bi
+		USING myschema.basket b
+		WHERE b.basket_id = bi.basket_id AND product_id = $1 AND basket_user_id = $2
+
+		`, productID, userID,
+	); err != nil {
+		return err
+	}
+	return nil
+
+}
+
 //TODO DELETE BASKET ITEMS
