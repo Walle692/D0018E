@@ -17,7 +17,7 @@ type CreateProductRequest struct {
 	Manufacturer string  `json:"manufacturer" binding:"required"`
 	Description  string  `json:"description" binding:"required"`
 	ScreenSize   int     `json:"screen_size" binding:"required"`
-	PictureURL   string  `json:"pictureURL" binding:"required"`
+	PictureURL   string  `json:"picture_url" binding:"required"`
 	Price        float64 `json:"price" binding:"required"`
 	Stock        int     `json:"stock" binding:"required"`
 }
