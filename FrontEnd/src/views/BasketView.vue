@@ -10,46 +10,47 @@
         <div v-else class="layout">
           <div class="layout__basket">
             <div class="basket__header">Your basket</div>
-            <div v-for="it in items" :key="it.product_id" class="item_container">
-              <img
-                class="item_container__img"
-                :src="it.picture_url || placeholder"
-                alt=""
-                @error="onImgError"
-              />
 
-              <div>
-                <router-link class="item_container__name" :to="`/products/${it.product_id}`">
-                  {{ it.product_name }}
-                </router-link>
-                <div class="item_container__manufacturer">{{ it.manufacturer }}</div>
-                <div>
-                  <span :class="it.available ? 'ok' : 'bad'">
-                    {{ it.available ? 'Available' : 'Unavailable' }}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <div>
-                  Qty: <b>{{ it.quantity }}</b>
-                </div>
-                <div>
-                  Unit: <b>{{ money(it.price) }}</b>
-                </div>
-                <div>
-                  Total: <b>{{ money(it.price * it.quantity) }}</b>
-                </div>
-              </div>
-
-              <div class="basket__delete">
-                <img
-                  src="@/assets/trash.svg"
-                  alt="delete"
-                  class="delete-icon"
-                  @click="handleDelete(it.product_id)"
-                />
-              </div>
+            <div class="items-list">
+              <ItemContainer
+                v-for="it in items"
+                :key="it.product_id"
+                :image-src="it.picture_url"
+                :alt="it.product_name"
+                :height="128"
+                :placeholder="placeholder"
+              >
+                <template #left-1>
+                  <router-link class="item_container__name" :to="`/products/${it.product_id}`">
+                    {{ it.product_name }}
+                  </router-link>
+                  <div class="item_container__manufacturer">{{ it.manufacturer }}</div>
+                  <div>
+                    <span :class="it.available ? 'ok' : 'bad'">
+                      {{ it.available ? 'Available' : 'Unavailable' }}
+                    </span>
+                  </div>
+                </template>
+                <template #left-2>
+                  <div>
+                    Unit: <b>{{ money(it.price) }}</b>
+                  </div>
+                  <div>
+                    Total: <b>{{ money(it.price * it.quantity) }}</b>
+                  </div>
+                  <div>
+                    Qty: <b>{{ it.quantity }}</b>
+                  </div>
+                </template>
+                <template #right-2>
+                  <IconButton
+                    :src="trashIcon"
+                    alt="delete"
+                    :size="32"
+                    @click="handleDelete(it.product_id)"
+                  />
+                </template>
+              </ItemContainer>
             </div>
           </div>
 
@@ -71,6 +72,9 @@
 import { onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { getBasket, checkoutBasket, deleteFromBasket } from '@/services/basket'
+import ItemContainer from '@/components/ItemContainer.vue'
+import IconButton from '@/components/IconButton.vue'
+import trashIcon from '@/assets/trash.svg'
 
 const router = useRouter()
 
@@ -156,25 +160,15 @@ onMounted(fetchBasket)
   border-radius: 24px;
 }
 
+.items-list {
+  display: grid;
+  grid-template-columns: auto 0.3fr auto 1fr auto auto;
+  row-gap: 24px;
+}
+
 .basket__header {
   font-weight: bold;
   font-size: 2.3rem;
-}
-.item_container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 2fr;
-  padding: 24px;
-  gap: 20px;
-  align-items: center;
-  border-radius: 24px;
-  background-color: var(--shadow);
-}
-
-.item_container__img {
-  width: 128px;
-  height: 128px;
-  object-fit: cover;
-  border-radius: 8px;
 }
 
 .item_container__manufacturer {
@@ -209,50 +203,12 @@ onMounted(fetchBasket)
   font-size: 2rem;
 }
 
-.basket__delete {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  background-color: var(--surface);
-  padding: 8px 16px;
-  width: 20px;
-  border-radius: 999px;
-}
-
-.delete-icon {
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  opacity: 0.6;
-}
-
-.delete-icon:hover {
-  opacity: 1;
-}
-
 @media (max-width: 900px) {
   .layout {
     grid-template-areas:
       'checkout'
       'basket';
     grid-template-columns: 1fr;
-  }
-
-  .item_container__img {
-    width: 64px;
-    height: 64px;
-    object-fit: cover;
-    border-radius: 8px;
-  }
-
-  .layout__basket {
-    padding: 8px;
-  }
-  .item_container {
-    padding: 8px;
-  }
-  .basket__header {
-    text-align: center;
   }
 }
 </style>

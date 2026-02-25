@@ -14,7 +14,7 @@ import (
 
 func CreateProduct(c *gin.Context) {
 	// read input from request body
-	var req CreateProductRequest
+	var req ProductRequest
 	session := sessions.Default(c)
 	userIDStr := session.Get(global.UserID)
 	userID, err := strconv.Atoi(userIDStr.(string))
@@ -29,7 +29,7 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	// create the basketItem in the database
-	if err := products.CreateProduct(userID, req.ProductName, req.Manufacturer, req.Description, req.PictureURL, req.ScreenSize, req.Price, req.Stock); err != nil {
+	if err := products.Create(userID, req.ProductName, req.Manufacturer, req.Description, req.PictureURL, req.ScreenSize, req.Price, req.Stock); err != nil {
 		fmt.Println("DEBUG: CREATE BASKET ITEM ERROR")
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could delete item"})
@@ -57,5 +57,31 @@ func Delist(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "product delisted"})
+
+}
+
+func Update(c *gin.Context) {
+	// read input from request body
+	var req UpdateRequest
+	session := sessions.Default(c)
+	userIDStr := session.Get(global.UserID)
+	userID, err := strconv.Atoi(userIDStr.(string))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := products.Update(userID, req.Product_id, req.ProductName, req.Manufacturer,
+		req.Description, req.PictureURL, req.ScreenSize, req.Price, req.Stock); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "updated"})
 
 }

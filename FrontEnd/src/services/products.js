@@ -68,3 +68,17 @@ export async function delistProduct(productID) {
   }
   return true
 }
+
+export async function updateProduct(product) {
+  const res = await fetch(`${BASE_URL}/seller/products/update`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(product),
+  })
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'error creating product')
+  }
+  return true
+}
