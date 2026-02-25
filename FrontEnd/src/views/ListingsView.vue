@@ -105,7 +105,7 @@
 
           <div class="btnwrap"><button type="button" @click="openEdit(product)">Edit</button></div>
           <div class="btnwrap">
-            <button type="button" @click="delistProduct(product.product_id)">Delist</button>
+            <button type="button" @click="submitDelist(product.product_id)">Delist</button>
           </div>
         </div>
       </div>
