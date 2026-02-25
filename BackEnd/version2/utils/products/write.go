@@ -6,8 +6,8 @@ import (
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 )
 
-func CreateProduct(sellerID int, productName string, manufacturer string,
-	desc string, pictureURL string, screen_size int, price float64, stock int) error {
+func Create(sellerID int, productName string, manufacturer string,
+	desc string, pictureURL string, screen_size float64, price float64, stock int) error {
 
 	ctx := context.Background()
 	pool := global.Get().Pool()
@@ -32,6 +32,33 @@ func Delist(productID int) error {
 	SET active = false
 	WHERE product_id = $1
 	`, productID); err != nil {
+		return err
+	}
+	return nil
+}
+
+func Update(sellerID int, product_id int, productName string, manufacturer string,
+	desc string, pictureURL string, screen_size float64, price float64, stock int) error {
+	ctx := context.Background()
+	pool := global.Get().Pool()
+
+	_, err := pool.Exec(ctx, `
+		UPDATE myschema.products
+		SET product_name = $1, manufacturer = $2, description = $3, 
+			screen_size = $4, picture_url = $5, price = $6, stock = $7
+			WHERE product_id = $8 AND seller_user_id = $9
+		`,
+		productName,
+		manufacturer,
+		desc,
+		screen_size,
+		pictureURL,
+		screen_size,
+		stock,
+		product_id,
+		sellerID,
+	)
+	if err != nil {
 		return err
 	}
 	return nil
