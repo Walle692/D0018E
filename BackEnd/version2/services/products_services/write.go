@@ -2,6 +2,7 @@ package products_services
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -10,17 +11,6 @@ import (
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 	"github.com/walle692/D0018E/BackEnd/version2/utils/products"
 )
-
-// takes the product id and quantity from the request and adds the product to the user's basket
-type CreateProductRequest struct {
-	ProductName  string  `json:"product_name" binding:"required"`
-	Manufacturer string  `json:"manufacturer" binding:"required"`
-	Description  string  `json:"description" binding:"required"`
-	ScreenSize   int     `json:"screen_size" binding:"required"`
-	PictureURL   string  `json:"picture_url" binding:"required"`
-	Price        float64 `json:"price" binding:"required"`
-	Stock        int     `json:"stock" binding:"required"`
-}
 
 func CreateProduct(c *gin.Context) {
 	// read input from request body
@@ -47,5 +37,25 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "item added to basket"})
+
+}
+
+func Delist(c *gin.Context) {
+	var req DeleteProduct
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Printf("here")
+		return
+	}
+
+	// create the basketItem in the database
+	if err := products.Delist(req.Product_id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not delete product"})
+		log.Printf("New er")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "product delisted"})
 
 }

@@ -12,7 +12,6 @@ import (
 	"github.com/walle692/D0018E/BackEnd/version2/services/order_services"
 	"github.com/walle692/D0018E/BackEnd/version2/services/products_services"
 	"github.com/walle692/D0018E/BackEnd/version2/services/user_services"
-	"github.com/walle692/D0018E/BackEnd/version2/utils/products"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -89,8 +88,8 @@ func engine() *gin.Engine {
 	{
 		private.GET("/me", user_services.Me)
 		private.GET("/status", user_services.Status)
-		private.GET("/products", products_services.GetProducts)
-		private.GET("/products/:id", products.GetProduct)
+		private.GET("/products", products_services.ListAll)
+		private.GET("/products/:id", products_services.GetByProductID)
 		private.POST("/basket/add", basket_services.AddToBasket)
 		private.DELETE("/basket/delete", basket_services.DeleteFromBasket)
 		private.GET("/basket", basket_services.GetBasket)
