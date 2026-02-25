@@ -93,20 +93,31 @@
         <div v-if="productsLoading">Loading products...</div>
         <div v-else-if="productsError">{{ productsError }}</div>
         <div v-else-if="products.length === 0">No products yet.</div>
-
-        <div class="item" v-else v-for="product in products" :key="product.product_id">
-          <img class="item__image" :src="product.picture_url" alt="image" />
-          <div class="item__info">
-            <div class="item__name">{{ product.product_name }}</div>
-            <div class="item__price">Price: {{ product.price }}</div>
-            <div class="item__stock">Stock: {{ product.stock }}</div>
-            <div class="item__available">Available: {{ product.active ? 'Yes' : 'No' }}</div>
-          </div>
-
-          <div class="btnwrap"><button type="button" @click="openEdit(product)">Edit</button></div>
-          <div class="btnwrap">
-            <button type="button" @click="submitDelist(product.product_id)">Delist</button>
-          </div>
+        <div v-else class="items-list">
+          <ItemContainer
+            v-for="product in products"
+            :key="product.product_id"
+            :image-src="product.picture_url"
+            alt="image"
+            :height="128"
+          >
+            <template #left-1>
+              <div class="item__name">{{ product.product_name }}</div>
+              <div class="item__manufacturer">Price: {{ product.price }}</div>
+              <div>Stock: {{ product.stock }}</div>
+            </template>
+            <template #right-1>
+              <IconButton :src="editIcon" alt="edit" :size="32" @click="openEdit(product)" />
+            </template>
+            <template #right-2>
+              <IconButton
+                :src="trashIcon"
+                alt="delete"
+                :size="32"
+                @click="submitDelist(product.product_id)"
+              />
+            </template>
+          </ItemContainer>
         </div>
       </div>
     </div>
@@ -116,7 +127,7 @@
 <style scoped>
 .layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 3fr;
   gap: 24px;
 }
 
@@ -129,15 +140,15 @@
   border-radius: 24px;
 }
 
-.item__image {
-  object-fit: cover;
-  width: 96px;
-  border-radius: 24px;
-}
-
 .item__name {
   font-weight: bold;
   font-size: 1.2rem;
+}
+
+.items-list {
+  display: grid;
+  grid-template-columns: auto 0.3fr auto 1fr auto auto;
+  row-gap: 24px;
 }
 
 .product-form,
@@ -195,10 +206,13 @@
   outline: solid 2px var(--hover);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
   .pair {
     flex-direction: column;
     gap: 16px;
+  }
+  .layout {
+    grid-template-columns: 1fr;
   }
 }
 </style>
@@ -206,7 +220,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { createProduct, delistProduct, getSellerProducts, updateProduct } from '@/services/products'
-
+import ItemContainer from '@/components/ItemContainer.vue'
+import IconButton from '@/components/IconButton.vue'
+import trashIcon from '@/assets/trash.svg'
+import editIcon from '@/assets/edit.svg'
 const formMode = ref('create') // 'create' | 'edit'
 const editingProductId = ref(null)
 
