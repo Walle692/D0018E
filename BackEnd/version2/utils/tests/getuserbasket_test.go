@@ -18,7 +18,7 @@ func TestGetUserBasket(t *testing.T) {
 	t.Run("no items in basket", func(t *testing.T) {
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
 		_ = test_setup.SeedBasket(t, ctx, pool, buyerID)
-		out, err := basket.GetUserBasket(buyerID)
+		out, err := basket.GetByUserID(buyerID)
 		require.NoError(t, err)
 		require.NotEmpty(t, out)
 	})
@@ -28,7 +28,7 @@ func TestGetUserBasket(t *testing.T) {
 		basketID := test_setup.SeedBasket(t, ctx, pool, buyerID)
 		_ = test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, 1)
 
-		out, err := basket.GetUserBasket(buyerID)
+		out, err := basket.GetByUserID(buyerID)
 		require.NoError(t, err)
 		require.Equal(t, out.Basket_items[0].Product_id, p1)
 		require.Equal(t, out.Basket_items[0].Price, price_1)
@@ -41,7 +41,7 @@ func TestGetUserBasket(t *testing.T) {
 		_ = test_setup.SeedBasketItem(t, ctx, pool, basketID, p1, 1)
 		_ = test_setup.SeedBasketItem(t, ctx, pool, basketID, p2, 1)
 
-		out, err := basket.GetUserBasket(buyerID)
+		out, err := basket.GetByUserID(buyerID)
 		require.NoError(t, err)
 		require.Equal(t, out.Basket_items[1].Product_id, p2)
 		require.Equal(t, out.Totalprice, price_1+price_2)

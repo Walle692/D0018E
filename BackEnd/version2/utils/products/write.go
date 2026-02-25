@@ -22,3 +22,17 @@ func CreateProduct(sellerID int, productName string, manufacturer string,
 	}
 	return nil
 }
+
+func Delist(productID int) error {
+	ctx := context.Background()
+	pool := global.Get().Pool()
+
+	if _, err := pool.Exec(ctx, `
+	UPDATE myschema.products
+	SET active = false
+	WHERE product_id = $1
+	`, productID); err != nil {
+		return err
+	}
+	return nil
+}
