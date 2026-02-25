@@ -11,7 +11,7 @@ import (
 func ListAll() ([]Product, error) {
 
 	query := `
-		SELECT product_id, product_name, manufacturer, description, screen_size, picture_url, price, stock  
+		SELECT product_id, product_name, manufacturer, description, screen_size, picture_url, price, stock, active 
 		FROM myschema.products
 		WHERE active = true
 	`
@@ -26,6 +26,7 @@ func ListAll() ([]Product, error) {
 			&p.Picture_url,
 			&p.Price,
 			&p.Stock,
+			&p.Active,
 		)
 		return p, err
 	}
@@ -55,7 +56,7 @@ func GetByProductID(productID int) (Product, error) {
 
 func ListBySellerID(sellerID int) ([]Product, error) {
 	query := `
-		SELECT product_name, manufacturer, description, screen_size, picture_url, price, stock  
+		SELECT product_id, product_name, manufacturer, description, screen_size, picture_url, price, stock, active  
 		FROM myschema.products
 		WHERE seller_user_id = $1 AND active = true
 	`
@@ -63,6 +64,7 @@ func ListBySellerID(sellerID int) ([]Product, error) {
 	scanProduct := func(rows pgx.Rows) (Product, error) {
 		var p Product
 		err := rows.Scan(
+			&p.Product_id,
 			&p.Product_name,
 			&p.Manufacturer,
 			&p.Description,
@@ -70,6 +72,7 @@ func ListBySellerID(sellerID int) ([]Product, error) {
 			&p.Picture_url,
 			&p.Price,
 			&p.Stock,
+			&p.Active,
 		)
 		return p, err
 	}

@@ -4,14 +4,16 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 )
 
 /*
-Currently takes basketID for consistency among how other basket function are written can easily be
-rewritten to take buyerID so we don't have to reverse the search done in getUserBasketID
+This function verifies first that the basket can be converted to an order IE no items out of stock or
+no items inactive. Then builds the order row by calculating order the total price of all items in basket
+lastly converting the basket items into order items (basket items gets deleted)
 */
-func ConvertBasketToOrder(basketID int) (orderID int, err error) {
+func Checkout(buyerID int) (orderID int, err error) {
 	ctx := context.Background()
 	pool := global.Get().Pool()
 
@@ -28,8 +30,8 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 	}()
 
 	// Get buyer ID (replace with get basket id if rewrite function input to buyerID)
-	var buyerID int
-	if err = tx.QueryRow(ctx, `SELECT basket_user_id FROM myschema.basket WHERE basket_id=$1`, basketID).Scan(&buyerID); err != nil {
+	var basketID int
+	if err = tx.QueryRow(ctx, `SELECT basket_id FROM myschema.basket WHERE basket_user_id=$1`, buyerID).Scan(&basketID); err != nil {
 		return 0, fmt.Errorf("basket not found: %w", err)
 	}
 
@@ -65,7 +67,7 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 			WHERE bi.basket_id = $1 AND p.product_id = bi.product_id
 			RETURNING p.product_id, p.stock
 		)
-		SELECT product_id FROM cte WHERE stock < 0 AND active=false
+		SELECT product_id FROM cte WHERE stock < 0
 		LIMIT 1
 		`, basketID,
 	).Scan(&errNoStock); err == nil {
@@ -105,6 +107,62 @@ func ConvertBasketToOrder(basketID int) (orderID int, err error) {
 	}
 
 	return orderID, nil
+}
+
+/*
+Creates an basket item with the corresponding basket id, if an basket
+item already exists for that product it and basket id update it instead of creating a new one
+*/
+func CreateItem(userID int, productID int, quantity int) error {
+	ctx := context.Background()
+	pool := global.Get().Pool()
+
+	var dummy int
+	insertInstead := true
+
+	// First check if product exists as basket item for the user
+	if err := pool.QueryRow(ctx, `
+		SELECT 1
+		FROM myschema.basketitem bi
+		JOIN myschema.basket b ON b.basket_id = bi.basket_id
+		WHERE b.basket_user_id = $1 AND bi.product_id =$2  
+		`, userID, productID,
+	).Scan(&dummy); err == pgx.ErrNoRows {
+		insertInstead = false
+	} else if err != nil {
+		return err
+	}
+
+	//If there is an basket item that already exits update that instead
+	if insertInstead {
+		if _, err := pool.Exec(ctx, `
+			UPDATE myschema.basketitem bi
+			SET quantity = bi.quantity + $1
+			FROM myschema.basket b
+			WHERE b.basket_id = bi.basket_id 
+				AND b.basket_user_id = $2 
+				AND bi.product_id = $3
+			`, quantity, userID, productID,
+		); err != nil {
+			return err
+		}
+		return nil
+
+	} else {
+		// Else create new row with in basket_item
+		query := `
+	INSERT INTO myschema.basketitem (basket_id, product_id, quantity)
+	SELECT b.basket_id, $2, $3
+	FROM myschema.basket b
+	WHERE b.basket_user_id = $1
+	`
+		_, err := pool.Exec(ctx, query, userID, productID, quantity)
+		if err != nil {
+			fmt.Println("DEBUG: CREATE BASKET ITEM INSERT ERROR")
+			return err
+		}
+		return nil
+	}
 }
 
 func DeleteBasketItemsWithProduct(userID int, productID int) error {
