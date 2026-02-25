@@ -205,7 +205,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { createProduct, delistProduct, getSellerProducts } from '@/services/products'
+import { createProduct, delistProduct, getSellerProducts, updateProduct } from '@/services/products'
 
 const formMode = ref('create') // 'create' | 'edit'
 const editingProductId = ref(null)
@@ -260,6 +260,35 @@ function cancelEdit() {
 }
 
 // API calls
+async function submitEdit() {
+  if (!editingProductId.value) {
+    error.value = 'No product selected for editing'
+    return
+  }
+
+  loading.value = true
+  error.value = ''
+  success.value = false
+
+  try {
+    await updateProduct({
+      ...form.value,
+      product_id: editingProductId.value,
+    })
+
+    success.value = true
+    form.value = getDefaultForm()
+    formMode.value = 'create'
+    editingProductId.value = null
+
+    await loadSellerProducts()
+  } catch (e) {
+    error.value = e?.message || 'Failed to update product'
+  } finally {
+    loading.value = false
+  }
+}
+
 async function submitCreate() {
   loading.value = true
   error.value = ''
@@ -291,10 +320,6 @@ async function submitDelist(productID) {
   } finally {
     loading.value = false
   }
-}
-
-async function submitEdit() {
-  return
 }
 
 async function loadSellerProducts() {
