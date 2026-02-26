@@ -19,23 +19,37 @@
           </div>
 
           <div class="order__items">
-            <div v-for="(it, idx) in o.order_items" :key="idx" class="item">
-              <img
-                v-if="it.picture_url"
-                :src="it.picture_url || placeholderImg"
-                class="item__image"
-                alt=""
-                @error="onImgError"
-              />
-
-              <div>
-                <router-link class="item__name" :to="`/products/${it.product_id}`">
+            <ItemContainer
+              v-for="(it, idx) in o.order_items"
+              :key="idk"
+              :image-src="it.picture_url"
+              :alt="it.product_name"
+              :height="128"
+              :placeholder="placeholder"
+            >
+              <template #left-1>
+                <router-link class="item_container__name" :to="`/products/${it.product_id}`">
                   {{ it.product_name }}
                 </router-link>
-
-                <div>Qty: {{ it.quantity }} · Price: {{ money(it.price) }}</div>
-              </div>
-            </div>
+                <div class="item_container__manufacturer">{{ it.manufacturer }}</div>
+                <div>
+                  <span :class="it.available ? 'ok' : 'bad'">
+                    {{ it.available ? 'Available' : 'Unavailable' }}
+                  </span>
+                </div>
+              </template>
+              <template #left-2>
+                <div>
+                  Unit: <b>{{ money(it.price) }}</b>
+                </div>
+                <div>
+                  Total: <b>{{ money(it.price * it.quantity) }}</b>
+                </div>
+                <div>
+                  Qty: <b>{{ it.quantity }}</b>
+                </div>
+              </template>
+            </ItemContainer>
           </div>
         </div>
       </template>
@@ -65,6 +79,7 @@ onMounted(async () => {
 })
 
 import placeholderImg from '@/assets/placeholder.webp'
+import ItemContainer from '@/components/ItemContainer.vue'
 
 const onImgError = (e) => {
   e.target.src = placeholderImg
@@ -120,6 +135,20 @@ const money = (x) => {
 .order__title {
   font-weight: bold;
 }
+.item_container__manufacturer {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+.item_container__name {
+  font-weight: bold;
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.item_container__name:hover {
+  color: var(--hover);
+}
 
 .order__total {
   font-weight: bold;
@@ -127,9 +156,9 @@ const money = (x) => {
 
 .order__items {
   margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: auto 0.3fr auto 1fr auto auto;
+  row-gap: 12px;
 }
 
 .item {
