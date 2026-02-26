@@ -64,6 +64,7 @@ function toCssSize(value) {
   padding-right: 96px;
   border-radius: 24px;
   background: var(--shadow);
+  border: solid 1px var(--border);
 }
 
 .item_container__img {
@@ -101,6 +102,17 @@ function toCssSize(value) {
 @media (max-width: 900px) {
   .item_container {
     padding-right: 24px;
+    grid-template-areas:
+      'a a . . e d'
+      'b c . . . .';
   }
+
+  .item_container__img {
+    width: calc(var(--item-height) / 2);
+    height: calc(var(--item-height) / 2);
+  }
+}
+
+@media (max-width: 350px) {
 }
 </style>

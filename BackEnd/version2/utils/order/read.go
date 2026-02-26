@@ -1,0 +1,65 @@
+package order
+
+import (
+	"log"
+
+	"github.com/jackc/pgx/v5"
+	queries "github.com/walle692/D0018E/BackEnd/version2/utils"
+)
+
+func ListByUserID(userID int) ([]Order, error) {
+
+	queryOrder := `
+		SELECT order_id, order_user_id, orderdate, totalprice
+		FROM myschema.order
+		WHERE order_user_id = $1
+	`
+
+	scanOrder := func(rows pgx.Rows) (Order, error) {
+		var o Order
+		err := rows.Scan(
+			&o.Order_id,
+			&o.Order_user_id,
+			&o.Order_date,
+			&o.Total_price,
+		)
+		return o, err
+	}
+
+	queryOrderItem := `
+		SELECT oi.quantity, oi.price,
+		p.product_id, p.product_name, p.manufacturer, p.picture_url
+		FROM myschema.orderitem oi
+		JOIN myschema.products p ON oi.product_id = p.product_id
+		WHERE oi.order_id = $1
+	`
+	scanOrderItem := func(rows pgx.Rows) (OrderItem, error) {
+		var o OrderItem
+		err := rows.Scan(
+			&o.Quantity,
+			&o.Price,
+			&o.Product_id,
+			&o.Product_name,
+			&o.Manufacturer,
+			&o.Picture_url,
+		)
+		return o, err
+	}
+	log.Printf("1st")
+	orders, err := queries.ListByQuery(queryOrder, scanOrder, userID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range orders {
+		log.Printf("2nd")
+
+		orderItems, err := queries.ListByQuery(queryOrderItem, scanOrderItem, orders[i].Order_id)
+		if err != nil {
+			return nil, err
+		}
+		orders[i].Order_items = orderItems
+
+	}
+	return orders, nil
+
+}

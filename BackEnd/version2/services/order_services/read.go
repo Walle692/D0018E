@@ -19,7 +19,7 @@ func GetUserOrders(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	orders, err := order.GetUserOrders(userID)
+	orders, err := order.ListByUserID(userID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fecth orders from database"})

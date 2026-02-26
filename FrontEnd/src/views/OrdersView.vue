@@ -9,7 +9,7 @@
       <template v-else>
         <p v-if="orders.length === 0">You have no orders.</p>
 
-        <div v-for="o in [...orders].reverse()" :key="o.order_id" class="order">
+        <div v-else v-for="o in orders" :key="o.order_id" class="order">
           <div class="order__header">
             <div>
               <div class="order__title">Order #{{ o.order_id }}</div>
@@ -21,16 +21,16 @@
           <div class="order__items">
             <div v-for="(it, idx) in o.order_items" :key="idx" class="item">
               <img
-                v-if="it.product?.picture_url"
-                :src="it.product.picture_url || placeholderImg"
+                v-if="it.picture_url"
+                :src="it.picture_url || placeholderImg"
                 class="item__image"
                 alt=""
                 @error="onImgError"
               />
 
               <div>
-                <router-link class="item__name" :to="`/products/${it.product.product_id}`">
-                  {{ it.product.product_name }}
+                <router-link class="item__name" :to="`/products/${it.product_id}`">
+                  {{ it.product_name }}
                 </router-link>
 
                 <div>Qty: {{ it.quantity }} · Price: {{ money(it.price) }}</div>
