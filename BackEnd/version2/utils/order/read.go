@@ -1,12 +1,53 @@
 package order
 
 import (
+	"fmt"
+
 	"github.com/jackc/pgx/v5"
 	queries "github.com/walle692/D0018E/BackEnd/version2/utils"
 )
 
 func ListByUserID(userID, limit, offset int) ([]Order, error) {
+	return ListBySearch("userID", userID, limit, offset)
+}
 
+// Builds SQL query to fetch rows from order table
+// Inputs search term username/userID/orderID
+// Returns all orders which matches that search
+func ListBySearch(searchType string, searchObject any, limit, offset int) ([]Order, error) {
+	head := `
+		SELECT o.order_id, o.order_user_id, o.orderdate, o.totalprice
+		FROM myschema.order o
+	`
+	var mid string
+	tail := `
+		ORDER BY o.orderdate DESC, o.order_id DESC
+		LIMIT $2 OFFSET $3
+	`
+	switch searchType {
+	case "username":
+		mid = `
+			JOIN myschema.users u ON o.order_user_id = u.user_id
+			WHERE u.username = $1
+		`
+	case "orderID":
+		mid = `WHERE o.order_id = $1`
+	case "userID":
+		mid = `
+			WHERE o.order_user_id = $1
+		`
+	default:
+		return nil, fmt.Errorf("Invalid search type")
+	}
+
+	query := head + mid + tail
+
+	return orderHelper(query, searchObject, limit, offset)
+}
+
+// First gets all orders that the query finds
+// Then for each returned order adds all items that the each order points to
+func orderHelper(query string, input any, limit, offset int) ([]Order, error) {
 	if limit <= 0 {
 		limit = 10
 	}
@@ -16,14 +57,6 @@ func ListByUserID(userID, limit, offset int) ([]Order, error) {
 	if offset < 0 {
 		offset = 0
 	}
-
-	queryOrder := `
-		SELECT order_id, order_user_id, orderdate, totalprice
-		FROM myschema.order
-		WHERE order_user_id = $1
-		ORDER BY orderdate DESC, order_id DESC
-		LIMIT $2 OFFSET $3
-	`
 
 	scanOrder := func(rows pgx.Rows) (Order, error) {
 		var o Order
@@ -55,7 +88,7 @@ func ListByUserID(userID, limit, offset int) ([]Order, error) {
 		)
 		return o, err
 	}
-	orders, err := queries.ListByQuery(queryOrder, scanOrder, userID, limit, offset)
+	orders, err := queries.ListByQuery(query, scanOrder, input, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -69,5 +102,4 @@ func ListByUserID(userID, limit, offset int) ([]Order, error) {
 
 	}
 	return orders, nil
-
 }
