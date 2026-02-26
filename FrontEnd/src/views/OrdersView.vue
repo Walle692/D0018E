@@ -32,11 +32,6 @@
                   {{ it.product_name }}
                 </router-link>
                 <div class="item_container__manufacturer">{{ it.manufacturer }}</div>
-                <div>
-                  <span :class="it.available ? 'ok' : 'bad'">
-                    {{ it.available ? 'Available' : 'Unavailable' }}
-                  </span>
-                </div>
               </template>
               <template #left-2>
                 <div>
@@ -54,32 +49,51 @@
         </div>
       </template>
     </div>
+    <button type="button" :disabled="offset === 0 || loading" @click="prevPage">Prev</button>
+    <button type="button" :disabled="orders.length < limit || loading" @click="nextPage">
+      Next
+    </button>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getOrders } from '@/services/auth'
+import { getOrders } from '@/services/orders'
+import placeholderImg from '@/assets/placeholder.webp'
+import ItemContainer from '@/components/ItemContainer.vue'
 
 const router = useRouter()
 const loading = ref(true)
 const error = ref('')
 const orders = ref([])
 
-onMounted(async () => {
+const limit = 10
+const offset = ref(0)
+
+async function loadOrders() {
+  loading.value = true
+  error.value = ''
   try {
-    orders.value = await getOrders()
+    orders.value = await getOrders({ limit, offset: offset.value })
   } catch (e) {
     error.value = e?.message || 'Failed to load orders'
-    router.push('/')
   } finally {
     loading.value = false
   }
-})
+}
 
-import placeholderImg from '@/assets/placeholder.webp'
-import ItemContainer from '@/components/ItemContainer.vue'
+function nextPage() {
+  offset.value += limit
+  loadOrders()
+}
+
+function prevPage() {
+  offset.value = Math.max(0, offset.value - limit)
+  loadOrders()
+}
+
+onMounted(loadOrders)
 
 const onImgError = (e) => {
   e.target.src = placeholderImg

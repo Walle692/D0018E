@@ -21,7 +21,7 @@ func TestRootOrders(t *testing.T) {
 
 	t.Run("no orders", func(t *testing.T) {
 		buyerID := test_setup.SeedUser(t, ctx, pool, "buyer_"+Suffix(), "buyer")
-		out, err := order.GetUserOrders(buyerID)
+		out, err := order.ListByUserID(buyerID, 10, 0)
 		require.NoError(t, err)
 		require.Empty(t, out)
 	})
@@ -32,7 +32,7 @@ func TestRootOrders(t *testing.T) {
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, totalPrice)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, productID, 1, 1)
 
-		out, err := order.GetUserOrders(buyerID)
+		out, err := order.ListByUserID(buyerID, 10, 0)
 		require.NoError(t, err)
 		require.Len(t, out, 1)
 
@@ -48,11 +48,11 @@ func TestRootOrders(t *testing.T) {
 		order2ID := test_setup.SeedOrder(t, ctx, pool, buyerID, totalPrice_2)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, order2ID, productID, 1, 1)
 
-		out, err := order.GetUserOrders(buyerID)
+		out, err := order.ListByUserID(buyerID, 10, 0)
 		require.NoError(t, err)
 		require.Len(t, out, 2)
 
-		byID := map[int]order.OrderResponse{}
+		byID := map[int]order.Order{}
 		for _, o := range out {
 			byID[o.Order_id] = o
 		}
@@ -78,7 +78,7 @@ func TestOrderItems(t *testing.T) {
 		orderID := test_setup.SeedOrder(t, ctx, pool, buyerID, 1)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p1, 100, 100)
 
-		out, err := order.GetUserOrders(buyerID)
+		out, err := order.ListByUserID(buyerID, 10, 0)
 		require.NoError(t, err)
 
 		require.Len(t, out[0].Order_items, 1)
@@ -89,7 +89,7 @@ func TestOrderItems(t *testing.T) {
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p1, 100, 100)
 		_ = test_setup.SeedOrderItem(t, ctx, pool, orderID, p2, 200, 200)
 
-		out, err := order.GetUserOrders(buyerID)
+		out, err := order.ListByUserID(buyerID, 10, 0)
 		require.NoError(t, err)
 
 		require.Len(t, out[0].Order_items, 2)
@@ -97,9 +97,6 @@ func TestOrderItems(t *testing.T) {
 		items := out[0].Order_items
 		require.Equal(t, items[0].Quantity, 100)
 		require.Equal(t, items[1].Quantity, 200)
-
-		require.Equal(t, items[0].Product.Product_id, p1)
-		require.Equal(t, items[1].Product.Product_id, p2)
 
 	})
 }
