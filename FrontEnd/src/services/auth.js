@@ -59,17 +59,3 @@ export async function createUser({ username, password, role }) {
 
   return true
 }
-
-export async function getOrders() {
-  const res = await fetch(`${BASE_URL}/private/orders`, {
-    method: 'GET',
-    credentials: 'include',
-  })
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => '')
-    throw new Error(text || 'get orders failed')
-  }
-
-  return await res.json()
-}

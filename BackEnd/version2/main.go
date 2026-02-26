@@ -109,6 +109,7 @@ func engine() *gin.Engine {
 	admin.Use(handlers.AuthenticateSession, handlers.AuthenticateAdminSession)
 	{
 		admin.POST("/create-user", user_services.MakeUser)
+		admin.POST("/orders", order_services.SearchOrders)
 	}
 
 	return r
