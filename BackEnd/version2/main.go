@@ -103,6 +103,7 @@ func engine() *gin.Engine {
 		seller.GET("/products", products_services.GetSellerProduct)
 		seller.DELETE("/products/delist", products_services.Delist)
 		seller.POST("/products/update", products_services.Update)
+		seller.POST("/orders", order_services.SearchOrdersLimited)
 	}
 
 	admin := r.Group("/admin")

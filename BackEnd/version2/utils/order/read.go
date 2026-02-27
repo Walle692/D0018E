@@ -40,14 +40,60 @@ func ListBySearch(searchType string, searchObject any, limit, offset int) ([]Ord
 		return nil, fmt.Errorf("Invalid search type")
 	}
 
-	query := head + mid + tail
+	queryOrder := head + mid + tail
 
-	return orderHelper(query, searchObject, limit, offset)
+	queryOrderItem := `
+		SELECT oi.quantity, oi.price,
+		p.product_id, p.product_name, p.manufacturer, p.picture_url
+		FROM myschema.orderitem oi
+		JOIN myschema.products p ON oi.product_id = p.product_id
+		WHERE oi.order_id = $1
+	`
+	return orderHelper(queryOrder, []any{searchObject}, queryOrderItem, func(orderID int) []any { return []any{orderID} }, limit, offset)
 }
 
-// First gets all orders that the query finds
-// Then for each returned order adds all items that the each order points to
-func orderHelper(query string, input any, limit, offset int) ([]Order, error) {
+// Build query on on how to fetch orders
+// And lastly orderItem query that only returns items that the seller owns
+func ListBySellerSearch(sellerID int, searchType string, searchObject any, limit, offset int) ([]Order, error) {
+	head := `
+		SELECT DISTINCT o.order_id, o.order_user_id, o.orderdate, o.totalprice
+		FROM myschema.order o
+		JOIN myschema.orderitem oi ON o.order_id = oi.order_id
+		JOIN myschema.products p ON oi.product_id = p.product_id
+	`
+	var mid string
+	tail := `
+		ORDER BY o.orderdate DESC, o.order_id DESC
+		LIMIT $3 OFFSET $4
+	`
+
+	switch searchType {
+	case "product_id":
+		mid = `WHERE oi.product_id = $1 AND p.seller_user_id = $2`
+	case "product_name":
+		mid = `WHERE p.product_name = $1 AND p.seller_user_id = $2`
+	default:
+		return nil, fmt.Errorf("Search type not supported")
+	}
+
+	queryOrder := head + mid + tail
+
+	queryOrderItem := `
+		SELECT oi.quantity, oi.price,
+		p.product_id, p.product_name, p.manufacturer, p.picture_url
+		FROM myschema.orderitem oi
+		JOIN myschema.products p ON oi.product_id = p.product_id
+		WHERE oi.order_id = $1 AND p.seller_user_id = $2
+	`
+
+	return orderHelper(queryOrder, []any{searchObject, sellerID}, queryOrderItem, func(orderID int) []any { return []any{orderID, sellerID} }, limit, offset)
+}
+
+// Builds what is necessary to show a complete order
+// 1st pass in query to select which orders to return + array of argument for query
+// 2nd pass in query to select what the orders should contain + func(orderID int) []any {return []any{orderID + (query args)}}
+// Which really just is a wrapper for []any(query args)
+func orderHelper(queryOrder string, orderArgs []any, queryItem string, itemArgsBuilder func(orderID int) []any, limit, offset int) ([]Order, error) {
 	if limit <= 0 {
 		limit = 10
 	}
@@ -69,13 +115,6 @@ func orderHelper(query string, input any, limit, offset int) ([]Order, error) {
 		return o, err
 	}
 
-	queryOrderItem := `
-		SELECT oi.quantity, oi.price,
-		p.product_id, p.product_name, p.manufacturer, p.picture_url
-		FROM myschema.orderitem oi
-		JOIN myschema.products p ON oi.product_id = p.product_id
-		WHERE oi.order_id = $1
-	`
 	scanOrderItem := func(rows pgx.Rows) (OrderItem, error) {
 		var o OrderItem
 		err := rows.Scan(
@@ -88,13 +127,14 @@ func orderHelper(query string, input any, limit, offset int) ([]Order, error) {
 		)
 		return o, err
 	}
-	orders, err := queries.ListByQuery(query, scanOrder, input, limit, offset)
+	args := append(append([]any{}, orderArgs...), limit, offset)
+	orders, err := queries.ListByQuery(queryOrder, scanOrder, args...)
 	if err != nil {
 		return nil, err
 	}
 	for i := range orders {
-
-		orderItems, err := queries.ListByQuery(queryOrderItem, scanOrderItem, orders[i].Order_id)
+		itemArgs := itemArgsBuilder(orders[i].Order_id)
+		orderItems, err := queries.ListByQuery(queryItem, scanOrderItem, itemArgs...)
 		if err != nil {
 			return nil, err
 		}

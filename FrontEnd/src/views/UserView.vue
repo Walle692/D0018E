@@ -53,7 +53,7 @@
           v-if="isSeller"
           title="Pending Orders"
           subtitle="Orders you need to handle"
-          @click="router.push('/orders/pending')"
+          @click="router.push('/seller/orders')"
         />
 
         <!-- Admin only -->
