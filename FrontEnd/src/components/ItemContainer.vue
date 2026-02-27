@@ -1,4 +1,6 @@
 <script setup>
+import placeholderImg from '@/assets/placeholder.webp'
+
 const props = defineProps({
   imageSrc: {
     type: String,
@@ -14,7 +16,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: 'https://placehold.co/400x400',
+    default: placeholderImg,
   },
 })
 
