@@ -21,6 +21,25 @@ func ListAll(c *gin.Context) {
 	c.JSON(http.StatusOK, products)
 }
 
+func SearchProduct(c *gin.Context) {
+	var req SearchRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+
+	products, err := products.ListBySearch(req.SearchType, req.SearchObject, req.SortType, req.SortDirection, limit, offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, products)
+}
+
 func GetByProductID(c *gin.Context) {
 	// string
 	productIDsting := c.Param("id")

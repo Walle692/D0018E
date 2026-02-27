@@ -95,6 +95,7 @@ func engine() *gin.Engine {
 		private.GET("/basket", basket_services.GetBasket)
 		private.GET("/orders", order_services.GetUserOrders)
 		private.POST("/checkout", basket_services.CheckOut)
+		private.POST("/search/products", products_services.SearchProduct)
 	}
 	seller := r.Group("/seller")
 	seller.Use(handlers.AuthenticateSession, handlers.AuthenticateSellerSession)

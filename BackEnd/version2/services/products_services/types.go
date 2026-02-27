@@ -24,3 +24,10 @@ type UpdateRequest struct {
 	Price        float64 `json:"price" binding:"required"`
 	Stock        int     `json:"stock" binding:"required"`
 }
+
+type SearchRequest struct {
+	SearchType    string `json:"search_type"`
+	SearchObject  string `json:"search_object"`
+	SortType      string `json:"sort_type"`
+	SortDirection string `json:"sort_direction"`
+}

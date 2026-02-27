@@ -2,12 +2,17 @@ package products
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/walle692/D0018E/BackEnd/version2/global"
 )
 
 func Create(sellerID int, productName string, manufacturer string,
 	desc string, pictureURL string, screen_size float64, price float64, stock int) error {
+
+	if screen_size < 0 || price < 0 || stock < 0 {
+		return fmt.Errorf("Can't be negative")
+	}
 
 	ctx := context.Background()
 	pool := global.Get().Pool()
@@ -41,6 +46,10 @@ func Update(sellerID int, product_id int, productName string, manufacturer strin
 	desc string, pictureURL string, screen_size float64, price float64, stock int) error {
 	ctx := context.Background()
 	pool := global.Get().Pool()
+
+	if screen_size < 0 || price < 0 || stock < 0 {
+		return fmt.Errorf("Can't be negative")
+	}
 
 	_, err := pool.Exec(ctx, `
 		UPDATE myschema.products
