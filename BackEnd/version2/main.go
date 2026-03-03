@@ -96,9 +96,13 @@ func engine() *gin.Engine {
 		private.GET("/basket", basket_services.GetBasket)
 		private.GET("/orders", order_services.GetUserOrders)
 		private.POST("/checkout", basket_services.CheckOut)
+<<<<<<< HEAD
 		private.GET("/reviews/products/:id", review_services.GetProductReviews)
 		private.GET("/reviews/user/:id", review_services.GetUserReviews)
 		private.POST("/reviews/write", review_services.WriteReview)
+=======
+		private.POST("/search/products", products_services.SearchProduct)
+>>>>>>> main
 	}
 	seller := r.Group("/seller")
 	seller.Use(handlers.AuthenticateSession, handlers.AuthenticateSellerSession)
@@ -107,12 +111,14 @@ func engine() *gin.Engine {
 		seller.GET("/products", products_services.GetSellerProduct)
 		seller.DELETE("/products/delist", products_services.Delist)
 		seller.POST("/products/update", products_services.Update)
+		seller.POST("/orders", order_services.SearchOrdersLimited)
 	}
 
 	admin := r.Group("/admin")
 	admin.Use(handlers.AuthenticateSession, handlers.AuthenticateAdminSession)
 	{
 		admin.POST("/create-user", user_services.MakeUser)
+		admin.POST("/orders", order_services.SearchOrders)
 	}
 
 	return r

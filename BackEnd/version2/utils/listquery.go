@@ -11,13 +11,12 @@ import (
 Helper function to get multiple rows from any query
 Input query string to be executed, and function name of the scaning method example:
 
+	query := `
+		SELECT product_name
+		FROM myschema.products
+		WHERE seller_user_id = $1 AND active = true
+	`
 	func (){
-		query := `
-			SELECT product_name
-			FROM myschema.products
-			WHERE seller_user_id = $1 AND active = true
-		`
-
 		scanProduct := func(rows pgx.Rows) (Product, error) {
 			var p Product
 			err := rows.Scan(

@@ -82,3 +82,24 @@ export async function updateProduct(product) {
   }
   return true
 }
+
+export async function searchProducts({
+  search_type,
+  search_object,
+  sort_type,
+  sort_direction,
+  limit = 16,
+  offset = 0,
+}) {
+  const res = await fetch(`${BASE_URL}/private/search/products?limit=${limit}&offset=${offset}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ search_type, search_object, sort_type, sort_direction }),
+  })
+
+  const text = await res.text().catch(() => '')
+  if (!res.ok) throw new Error(text || 'product search failed')
+
+  return text ? JSON.parse(text) : []
+}

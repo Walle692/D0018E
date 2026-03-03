@@ -1,158 +1,232 @@
-﻿<!-- src/views/ProductsView.vue -->
-<template>
+﻿<template>
   <div class="page">
-    <div class="header">
-      <h1>Products</h1>
-      <p class="subtitle">Browse our latest products</p>
+    <div class="layout">
+      <div class="search">
+        <div class="search__header">Product Search</div>
+        <SearchBar
+          v-model="searchText"
+          v-model:typeValue="searchType"
+          :types="[
+            { value: 'product_name', label: 'Product name' },
+            { value: 'manufacturer', label: 'Manufacturer' },
+          ]"
+          placeholder="Search..."
+          :disabled="loading"
+          @search="runSearch(true)"
+        />
+        <div class="options-row">
+          <select v-model="sortType" class="opt" :disabled="loading">
+            <option value="price">Sort: Price</option>
+            <option value="screen_size">Sort: Screen size</option>
+          </select>
+          <select v-model="sortDirection" class="opt" :disabled="loading">
+            <option value="">Ascending</option>
+            <option value="descending">Descending</option>
+          </select>
+          <button
+            type="button"
+            class="sb_btn sb_btn--reset"
+            :disabled="loading"
+            @click="resetAndSearch"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+      <p v-if="loading">Searching...</p>
+      <p v-else-if="error">{{ error }}</p>
+      <template v-else>
+        <p v-if="hasSearched && products.length === 0">No products found.</p>
+        <p v-else-if="!hasSearched">Enter a search and press Search.</p>
+        <div v-else class="products_area">
+          <ProductCard v-for="p in products" :key="p.product_id" :product="p" :imgHeight="256">
+          </ProductCard>
+        </div>
+      </template>
     </div>
-
-    <div v-if="loading" class="state">Loading products...</div>
-    <div v-else-if="error" class="state error">{{ error }}</div>
-    <div v-else-if="products.length === 0" class="state">No products found.</div>
-
-    <div v-else class="grid">
-      <article
-        v-for="p in products"
-        :key="p.product_id || p.product_id || p.picture_url"
-        class="product-card"
-        @click="router.push(`/products/${p.product_id}`)"
+    <div class="pager">
+      <button type="button" :disabled="offset === 0 || loading || !hasSearched" @click="prevPage">
+        Prev
+      </button>
+      <button
+        type="button"
+        :disabled="loading || !hasSearched || products.length < limit"
+        @click="nextPage"
       >
-        <div class="image-wrap">
-          <img
-            v-if="p.picture_url"
-            :src="p.picture_url"
-            :alt="p.product_name || 'Product image'"
-            loading="lazy"
-          />
-          <div v-else class="image-fallback">No image</div>
-        </div>
-
-        <div class="info">
-          <h3 class="name">{{ p.product_name || 'Unnamed product' }}</h3>
-          <div class="price">{{ formatPrice(p.price) }}</div>
-        </div>
-      </article>
+        Next
+      </button>
     </div>
-
-    <button class="linkBtn" type="button" @click="router.push('/user')"><- Back to account</button>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { getProducts } from '@/services/products'
+import SearchBar from '@/components/SearchBar.vue'
+import { searchProducts } from '@/services/products'
+import ProductCard from '@/components/ProductCard.vue'
 
-const router = useRouter()
-
-const products = ref([])
 const loading = ref(false)
 const error = ref('')
+const hasSearched = ref(false)
 
-function formatPrice(price) {
-  if (price === null || price === undefined || price === '') return 'Price unavailable'
-  if (typeof price === 'number') return `${price} kr`
-  return `${price}`
-}
+const products = ref([])
 
-async function fetchProducts() {
+const limit = 10
+const offset = ref(0)
+
+const searchType = ref('product_name')
+const searchText = ref('')
+
+const sortType = ref('price')
+const sortDirection = ref('') // '' = ascending, 'descending' = descending
+
+async function runSearch(resetOffset = false) {
+  hasSearched.value = true
+  if (resetOffset) offset.value = 0
+
   loading.value = true
   error.value = ''
 
   try {
-    const data = await getProducts()
-    products.value = Array.isArray(data) ? data : data?.products || []
+    products.value = await searchProducts({
+      search_type: searchType.value,
+      search_object: searchText.value,
+      sort_type: sortType.value,
+      sort_direction: sortDirection.value,
+      limit,
+      offset: offset.value,
+    })
   } catch (e) {
-    error.value = e?.message || 'Failed to load products'
+    error.value = e?.message || 'Search failed'
+    products.value = []
   } finally {
     loading.value = false
   }
 }
 
-onMounted(fetchProducts)
+function resetAndSearch() {
+  searchText.value = ''
+  searchType.value = ''
+  sortType.value = 'price'
+  sortDirection.value = ''
+  offset.value = 0
+  runSearch(true)
+}
+
+function nextPage() {
+  offset.value += limit
+  runSearch(false)
+}
+
+function prevPage() {
+  offset.value = Math.max(0, offset.value - limit)
+  runSearch(false)
+}
+
+onMounted(resetAndSearch)
 </script>
 
 <style scoped>
-.page {
-  padding: 24px;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.subtitle {
-  opacity: 0.8;
-}
-
-.state {
-  margin-top: 16px;
-}
-
-.state.error {
-  color: #b00020;
-}
-
-.grid {
-  margin-top: 18px;
+.layout {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 14px;
-}
-
-.product-card {
-  border: 1px solid var(--border, #ddd);
-  border-radius: 10px;
-  background: var(--surface, #fff);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-height: 220px;
-}
-
-.image-wrap {
-  width: 100%;
-  height: 140px;
-  background: #f4f4f4;
-  display: flex;
-  align-items: center;
+  grid-template-areas:
+    '. search .'
+    'product product product';
+  grid-template-columns: 1fr 3fr 1fr;
+  gap: 36px;
   justify-content: center;
 }
-
-.image-wrap img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.image-fallback {
-  font-size: 12px;
-  opacity: 0.6;
-}
-
-.info {
-  padding: 10px 12px;
+.search {
+  grid-area: search;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  padding: 24px;
+  border-radius: 24px;
+  background-color: var(--surface);
+  box-shadow: 3px 3px var(--shadow);
+  gap: 16px;
 }
 
-.name {
-  font-size: 14px;
-  line-height: 1.2;
-  margin: 0;
+.search__header {
+  font-weight: bold;
+  font-size: 2rem;
 }
 
-.price {
-  font-weight: 600;
+.options-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
-.linkBtn {
-  width: auto;
-  margin-top: 18px;
+/* Override global button because some buffon thought that was a good idea*/
+.sb_btn {
+  width: auto !important;
+  margin-top: 0 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px !important;
+  height: 42px;
+  border-radius: 12px;
+  border: 2px solid var(--shadow);
+  background: var(--bg);
+  color: inherit;
+  font-size: 1rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.opt {
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 2px solid var(--shadow);
+  background: var(--bg);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.products_area {
+  grid-area: product;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  background: var(--surface);
+  padding: 48px;
+  border-radius: 48px;
+  box-shadow: 6px 6px var(--shadow);
+}
+
+.pager {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+@media (max-width: 1800px) {
+  .products_area {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 1500px) {
+  .products_area {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 1200px) {
+  .products_area {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .products_area {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 </style>
