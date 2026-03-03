@@ -298,7 +298,7 @@ const form = reactive({
   rating: 5,
 })
 
-const canSubmit = computed(() => form.rating >= 1 && form.rating <= 5)
+const canSubmit = computed(() => form.rating >= 1 && form.rating <= 5 && product.value !== null)
 
 const onImgError = (e) => {
   e.target.src = placeholderImg
@@ -367,6 +367,9 @@ async function onSubmit() {
   loading.value = true
 
   try {
+    if (!product.value) {
+      throw new Error('Product not loaded')
+    }
     await createReview({ Product_id: product.value.product_id, Comment: form.comment, Rating: form.rating })
     success.value = 'Review created successfully!'
     form.comment = ''
