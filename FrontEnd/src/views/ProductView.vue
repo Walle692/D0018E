@@ -64,26 +64,47 @@
         <div class="reviews">
           <div class="reviews__header">Reviews</div>
 
-          <!-- Place holder until fetch orders API is done-->
-          <div class="reviews__review">
-            <div>
-              <div class="review__username">testcompany.net</div>
-              <div class="review__rating">★★★★</div>
+          <p v-if="reviewLoading" class="state">Loading Reviews...</p>
+          <p v-else-if="reviewError" class="state error">{{ error }}</p>
+          <template v-else>
+            <div v-if="reviews.length === 0" class="state">No reviews yet.</div>
+            <div v-else>
+              <div v-for="review in reviews" :key="review.review_id" class="reviews__review">
+                <div class="review__rating">Rating: {{ review.rating }} / 5</div>
+                <div class="review__comment">{{ review.comment }}</div>
+              </div>
             </div>
+          </template>
+        </div>
 
-            <div class="review__test">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque rhoncus fermentum est
-              vitae auctor. Duis pulvinar, metus ac sagittis convallis, erat dui pulvinar tellus, at
-              scelerisque quam tellus eget augue. Nulla facilisi. Donec efficitur pretium rutrum.
-              Praesent aliquet interdum accumsan. In placerat lectus nibh, mollis pellentesque
-              lectus egestas nec. Aenean a congue magna. Suspendisse feugiat, orci nec ultricies
-              efficitur, purus nulla sagittis tortor, sit amet tempus tellus leo a ligula. Integer
-              luctus, tortor in sagittis hendrerit, tellus elit interdum turpis, eu dictum dolor
-              lorem eget enim. Etiam eget feugiat purus, eget aliquam neque. Ut a tempus ligula, vel
-              congue mauris. Aenean feugiat magna orci, quis accumsan sapien imperdiet vitae. Proin
-              sit amet lacus eu libero sollicitudin euismod. In hac habitasse platea dictumst.
+        <div class="write-review">
+            <div class="card">
+              <form @submit.prevent="onSubmit">
+                <label class="field">
+                  <span>Comment</span>
+                  <input
+                    v-model.trim="form.comment"
+                    type="text"
+                    placeholder="Write your review here"
+                    autocomplete=""
+                  />
+                </label>
+
+                <label class="field">
+                  <span>Rating</span>
+                  <select v-model="form.rating">
+                    <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+                  </select>
+                </label>
+
+                <button type="submit" :disabled="loading || !canSubmit">
+                  {{ loading ? 'Creating...' : 'Creating review' }}
+                </button>
+
+                <p v-if="success" class="success">{{ success }}</p>
+                <p v-if="error" class="error">{{ error }}</p>
+              </form>
             </div>
-          </div>
         </div>
       </template>
     </div>
@@ -260,12 +281,23 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getProductById } from '@/services/products'
 import { addToBasket as addToBasketApi } from '@/services/basket'
+import { getReviewsForProduct } from '@/services/reviews'
 import placeholderImg from '@/assets/placeholder.webp'
 
 const router = useRouter()
 const product = ref(null)
 const loading = ref(true)
 const error = ref('')
+const reviews = ref([])
+const reviewLoading = ref(true)
+const reviewError = ref('')
+
+const form = reactive({
+  comment: '',
+  rating: 5,
+})
+
+const canSubmit = computed(() => form.rating >= 1 && form.rating <= 5)
 
 const onImgError = (e) => {
   e.target.src = placeholderImg
@@ -309,5 +341,40 @@ async function fetchProduct() {
   }
 }
 
+async function fetchReviews() {
+  reviewLoading.value = true
+  reviewError.value = ''
+  reviews.value = []
+
+  try {
+    const reviews = await getReviewsForProduct(router.currentRoute.value.params.id)
+    reviews.value = reviews
+  } catch (e) {
+    console.error('Failed to fetch reviews:', e)
+  } finally {
+    reviewLoading.value = false
+  }
+}
+
+async function onSubmit() {
+  // Prepared for backend integration:
+  // Later you will call something like:
+  // await createReview({ productId: product.value.product_id, comment: form.comment, rating: form.rating });
+
+  error.value = ''
+  success.value = ''
+  loading.value = true
+
+  try {
+    await createReview({ Product_id: product.value.product_id, Comment: form.comment, Rating: form.rating })
+    fetchReviews() // Refresh reviews after submission
+  } catch (e) {
+    error.value = e?.message || 'Failed to create review'
+  } finally {
+    loading.value = false
+  }
+}
+
 onMounted(fetchProduct)
+onMounted(fetchReviews)
 </script>

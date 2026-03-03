@@ -11,6 +11,7 @@ import (
 	"github.com/walle692/D0018E/BackEnd/version2/services/basket_services"
 	"github.com/walle692/D0018E/BackEnd/version2/services/order_services"
 	"github.com/walle692/D0018E/BackEnd/version2/services/products_services"
+	"github.com/walle692/D0018E/BackEnd/version2/services/review_services"
 	"github.com/walle692/D0018E/BackEnd/version2/services/user_services"
 
 	"github.com/gin-contrib/sessions"
@@ -95,6 +96,9 @@ func engine() *gin.Engine {
 		private.GET("/basket", basket_services.GetBasket)
 		private.GET("/orders", order_services.GetUserOrders)
 		private.POST("/checkout", basket_services.CheckOut)
+		private.GET("/reviews/products/:id", review_services.GetProductReviews)
+		private.GET("/reviews/user/:id", review_services.GetUserReviews)
+		private.POST("/reviews/write", review_services.WriteReview)
 		private.POST("/search/products", products_services.SearchProduct)
 	}
 	seller := r.Group("/seller")
