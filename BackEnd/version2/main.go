@@ -116,6 +116,7 @@ func engine() *gin.Engine {
 	{
 		admin.POST("/create-user", user_services.MakeUser)
 		admin.POST("/orders", order_services.SearchOrders)
+		admin.DELETE("/reviews/:id", review_services.DeleteReview)
 	}
 
 	return r
