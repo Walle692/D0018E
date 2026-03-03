@@ -93,7 +93,7 @@
                 <label class="field">
                   <span>Rating</span>
                   <select v-model="form.rating">
-                    <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+                    <option v-for="n in 3" :key="n" :value="n">{{ n }}</option>
                   </select>
                 </label>
 

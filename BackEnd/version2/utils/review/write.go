@@ -13,7 +13,7 @@ func WriteReview(customer_user_id, product_id int, comment string, rating int) e
 	pool := global.Get().Pool()
 
 	// check rating range
-	if rating < 1 || rating > 5 {
+	if rating < 1 || rating > 3 {
 		return errors.New("rating must be between 1 and 5")
 	}
 
