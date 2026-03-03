@@ -70,7 +70,7 @@
             <div v-if="reviews.length === 0" class="state">No reviews yet.</div>
             <div v-else>
               <div v-for="review in reviews" :key="review.review_id" class="reviews__review">
-                <div class="review__rating">Rating: {{ review.rating }} / 5</div>
+                <div class="review__rating">Rating: {{ review.rating }} / 3</div>
                 <div class="review__comment">{{ review.comment }}</div>
                 <div v-if="isAdmin" class="review__remove">
                   <button class="linkBtn" @click="onRemoveReview(review.comment_id)">Remove review</button>
