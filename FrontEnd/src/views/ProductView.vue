@@ -70,8 +70,11 @@
             <div v-if="reviews.length === 0" class="state">No reviews yet.</div>
             <div v-else>
               <div v-for="review in reviews" :key="review.review_id" class="reviews__review">
-                <div class="review__rating">Rating: {{ review.rating }} / 3</div>
+                <div class="review__rating">Rating: {{ review.rating }} / 5</div>
                 <div class="review__comment">{{ review.comment }}</div>
+                <div v-if="isAdmin" class="review__remove">
+                  <button class="linkBtn" @click="onRemoveReview(review.comment_id)">Remove review</button>
+                </div>
               </div>
             </div>
           </template>
@@ -280,11 +283,15 @@ input:focus {
 <script setup>
 import { computed, onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { getMe } from '@/services/auth'
 import { getProductById } from '@/services/products'
 import { addToBasket as addToBasketApi } from '@/services/basket'
-import { getReviewsForProduct, createReview } from '@/services/reviews'
+import { getReviewsForProduct, createReview, removeReview } from '@/services/reviews'
 import placeholderImg from '@/assets/placeholder.webp'
 
+
+const me = ref(null)
+const isAdmin = computed(() => me.value?.role === 'admin')
 const router = useRouter()
 const product = ref(null)
 const loading = ref(true)
@@ -300,7 +307,7 @@ const form = reactive({
   rating: 5,
 })
 
-const canSubmit = computed(() => form.rating >= 1 && form.rating <= 5 && product.value !== null)
+const canSubmit = computed(() => form.rating >= 1 && form.rating <= 5 && product.value !== null && !isAdmin)
 
 const onImgError = (e) => {
   e.target.src = placeholderImg
@@ -384,6 +391,22 @@ async function onSubmit() {
   }
 }
 
+async function onRemoveReview(comment_id) {
+  try {
+    await removeReview(comment_id)
+    fetchReviews() // Refresh reviews after deletion
+  } catch (e) {
+    alert(e?.message || 'Failed to remove review')
+  }
+}
+
 onMounted(fetchProduct)
 onMounted(fetchReviews)
+onMounted(async () => {
+  try {
+    me.value = await getMe()
+  } catch (e) {
+    console.error('Failed to fetch user info:', e)
+  }
+})
 </script>

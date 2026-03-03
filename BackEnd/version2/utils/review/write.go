@@ -49,3 +49,15 @@ func WriteReview(customer_user_id, product_id int, comment string, rating int) e
 
 	return nil
 }
+
+func DeleteReview(comment_id int) error {
+	ctx := context.Background()
+	pool := global.Get().Pool()
+
+	_, err := pool.Exec(ctx, `DELETE FROM myschema.rating WHERE comment_id = $1`, comment_id)
+	if err != nil {
+		return fmt.Errorf("delete review: %w", err)
+	}
+
+	return nil
+}

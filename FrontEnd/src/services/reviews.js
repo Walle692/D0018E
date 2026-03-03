@@ -27,3 +27,17 @@ export async function createReview({Product_id, Comment, Rating}) {
   }
   return true
 }
+
+export async function removeReview(comment_id) {
+    // backend expects the id in the url path, no JSON body required
+    const res = await fetch(`${BASE_URL}/private/reviews/${comment_id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    })
+
+    if (!res.ok) {
+        const text = await res.text().catch(() => '')
+        throw new Error(text || 'error deleting review')
+    }
+    return true
+}

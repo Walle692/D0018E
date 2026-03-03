@@ -34,3 +34,21 @@ func WriteReview(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "review submitted"})
 
 }
+
+
+func DeleteReview(c *gin.Context) {
+	// read comment id from path parameter
+	idStr := c.Param("id")
+	commentID, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid comment id"})
+		return
+	}
+
+	if err := review.DeleteReview(commentID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "review deleted"})
+}
