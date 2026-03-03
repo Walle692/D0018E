@@ -277,17 +277,18 @@ input:focus {
 </style>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { getProductById } from '@/services/products'
 import { addToBasket as addToBasketApi } from '@/services/basket'
-import { getReviewsForProduct } from '@/services/reviews'
+import { getReviewsForProduct, createReview } from '@/services/reviews'
 import placeholderImg from '@/assets/placeholder.webp'
 
 const router = useRouter()
 const product = ref(null)
 const loading = ref(true)
 const error = ref('')
+const success = ref('')
 const reviews = ref([])
 const reviewLoading = ref(true)
 const reviewError = ref('')
@@ -351,8 +352,8 @@ async function fetchReviews() {
   reviews.value = []
 
   try {
-    const reviews = await getReviewsForProduct(router.currentRoute.value.params.id)
-    reviews.value = reviews
+    const data = await getReviewsForProduct(router.currentRoute.value.params.id)
+    reviews.value = data
   } catch (e) {
     console.error('Failed to fetch reviews:', e)
   } finally {
@@ -361,16 +362,15 @@ async function fetchReviews() {
 }
 
 async function onSubmit() {
-  // Prepared for backend integration:
-  // Later you will call something like:
-  // await createReview({ productId: product.value.product_id, comment: form.comment, rating: form.rating });
-
   error.value = ''
   success.value = ''
   loading.value = true
 
   try {
     await createReview({ Product_id: product.value.product_id, Comment: form.comment, Rating: form.rating })
+    success.value = 'Review created successfully!'
+    form.comment = ''
+    form.rating = 5
     fetchReviews() // Refresh reviews after submission
   } catch (e) {
     error.value = e?.message || 'Failed to create review'
