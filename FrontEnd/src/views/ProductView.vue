@@ -332,9 +332,13 @@ async function fetchProduct() {
   product.value = null
 
   try {
-    const data = await getProductById(router.currentRoute.value.params.id)
+    const productId = router.currentRoute.value.params.id
+    console.log('Fetching product with ID:', productId)
+    const data = await getProductById(productId)
+    console.log('Received product data:', data)
     product.value = data
   } catch (e) {
+    console.error('Error fetching product:', e)
     error.value = e?.message || 'Failed to load product'
   } finally {
     loading.value = false
