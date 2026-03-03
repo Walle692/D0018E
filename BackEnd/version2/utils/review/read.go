@@ -7,14 +7,14 @@ import (
 
 func GetReviewsByProductID(productID int) ([]Review, error) {
 	query := `
-		SELECT comment_id, customer_user_id, comment, rating 
+		SELECT comment_id, customer_user_id, product_id, comment, rating 
 		FROM myschema.rating
 		WHERE product_id = $1
 	`
 
 	scanRewiew := func(rows pgx.Rows) (Review, error) {
 		var r Review
-		err := rows.Scan(&r.Comment_id, &r.Customer_user_id, &r.Comment, &r.Rating)
+		err := rows.Scan(&r.Comment_id, &r.Customer_user_id, &r.Product_id, &r.Comment, &r.Rating)
 		return r, err
 	}
 
