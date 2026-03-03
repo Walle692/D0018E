@@ -15,7 +15,7 @@ export async function getReviewsForProduct(id) {
 }
 
 export async function createReview({Product_id, Comment, Rating}) {
-  const res = await fetch(`${BASE_URL}/private/review/write`, {
+  const res = await fetch(`${BASE_URL}/private/reviews/write`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
