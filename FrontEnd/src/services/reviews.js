@@ -30,7 +30,7 @@ export async function createReview({Product_id, Comment, Rating}) {
 
 export async function removeReview(comment_id) {
     // backend expects the id in the url path, no JSON body required
-    const res = await fetch(`${BASE_URL}/private/reviews/${comment_id}`, {
+    const res = await fetch(`${BASE_URL}/admin/reviews/${comment_id}`, {
         method: 'DELETE',
         credentials: 'include',
     })
