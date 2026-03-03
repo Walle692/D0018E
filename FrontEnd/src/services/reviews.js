@@ -14,12 +14,12 @@ export async function getReviewsForProduct(id) {
   return await res.json()
 }
 
-export async function createReview({productID, comment, rating}) {
+export async function createReview({Product_id, Comment, Rating}) {
   const res = await fetch(`${BASE_URL}/private/review/write`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ product_id, comment, rating }),
+    body: JSON.stringify({ Product_id, Comment, Rating }),
   })
   if (!res.ok) {
     const text = await res.text().catch(() => '')

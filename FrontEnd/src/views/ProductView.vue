@@ -371,7 +371,7 @@ async function onSubmit() {
     if (!product.value) {
       throw new Error('Product not loaded')
     }
-    await createReview({ Product_id: productId, Comment: form.comment, Rating: form.rating })
+    await createReview({ Product_id: product.value.product_id, Comment: form.comment, Rating: form.rating })
     success.value = 'Review created successfully!'
     form.comment = ''
     form.rating = 5
