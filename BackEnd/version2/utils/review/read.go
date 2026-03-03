@@ -18,7 +18,7 @@ func GetReviewsByProductID(productID int) ([]Review, error) {
 		return r, err
 	}
 
-	r, err := queries.ListByQuery(query, scanRewiew)
+	r, err := queries.ListByQuery(query, scanRewiew, productID)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func GetReviewsByUserID(userID int) ([]Review, error) {
 		return r, err
 	}
 
-	r, err := queries.ListByQuery(query, scanRewiew)
+	r, err := queries.ListByQuery(query, scanRewiew, userID)
 	if err != nil {
 		return nil, err
 	}
