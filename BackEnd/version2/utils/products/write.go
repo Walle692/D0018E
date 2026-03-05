@@ -62,7 +62,7 @@ func Update(sellerID int, product_id int, productName string, manufacturer strin
 		desc,
 		screen_size,
 		pictureURL,
-		screen_size,
+		price,
 		stock,
 		product_id,
 		sellerID,
