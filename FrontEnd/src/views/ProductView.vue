@@ -307,7 +307,13 @@ const form = reactive({
   rating: 5,
 })
 
-const canSubmit = computed(() => form.rating >= 1 && form.rating <= 5 && product.value !== null && !isAdmin)
+// `isAdmin` is a computed ref; use `.value` inside JS expressions or the
+// expression will always evaluate to false (objects are truthy, so `!isAdmin`
+// becomes `false`). That was why the submit button stayed disabled no matter
+// what.
+const canSubmit = computed(
+  () => form.rating >= 1 && form.rating <= 5 && product.value !== null && !isAdmin.value
+)
 
 const onImgError = (e) => {
   e.target.src = placeholderImg
