@@ -379,7 +379,8 @@ async function onSubmit() {
     if (!product.value) {
       throw new Error('Product not loaded')
     }
-    await createReview({ Product_id: product.value.product_id, Comment: form.comment, Rating: form.rating })
+    // build object with lowercase keys so backend binding works
+    await createReview({ product_id: product.value.product_id, comment: form.comment, rating: form.rating })
     success.value = 'Review created successfully!'
     form.comment = ''
     form.rating = 5
